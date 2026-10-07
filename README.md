@@ -19,6 +19,7 @@ l’émulateur Android (Android Studio requis), et `npm run web` lance la versio
 
 ```sh
 npm run typecheck
+npm run lint
 npx expo install --check
 ```
 
