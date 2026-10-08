@@ -25,9 +25,14 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "backgroundColor": "#090f18",
+          "image": "./assets/images/tamakoro-splash-logo.png",
+          "imageWidth": 280,
+          "ios": {
+            "image": "./assets/images/tamakoro-splash.png",
+            "enableFullScreenImage_legacy": true,
+            "resizeMode": "cover"
+          }
         }
       ]
     ],

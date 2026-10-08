@@ -54,6 +54,23 @@ et [builds depuis GitHub](https://docs.expo.dev/build/building-from-github/).
 
 ## Organisation
 
+Le démarrage affiche l’incubateur pixelisé plein écran et le titre central Tamakoro.
+Les SVG et PNG `assets/images/tamakoro-splash*` reprennent les dessins du jeu ;
+`node scripts/generate-splash.cjs` régénère les SVG. Pour les PNG, fournir le chemin
+d’un module Sharp installé avec `SHARP_MODULE=/chemin/vers/sharp` à la même commande.
+Le PNG portrait est rasterisé à 360 × 780 puis agrandi sans lissage.
+
+Sur iOS, le plugin `expo-splash-screen` utilise actuellement l’option native
+`enableFullScreenImage_legacy` (à remplacer lorsqu’Expo la retirera). Android affiche
+d’abord le logo sur fond bleu nuit, conformément à son écran système, puis le même
+incubateur plein écran. Le calque React est visible environ 1,1 seconde une fois
+l’image chargée ; les routes et la sauvegarde se chargent derrière. Il ne se rejoue
+pas à chaque retour au premier plan. Le mode clair et sombre partagent ce visuel.
+Recompiler après modification du splash natif : `npm run prebuild:ios`, puis
+`npm run ios:release` pour une vérification fidèle (ou équivalents Android).
+Expo Go et les development builds ne reproduisent pas entièrement le splash natif,
+voir [la documentation du SDK 57](https://docs.expo.dev/versions/v57.0.0/sdk/splash-screen/).
+
 - `src/app/` : routes Expo Router, adoption et écran de soins.
 - `src/components/` : sprite pixel art provisoire et palettes.
 - `src/game/` : règles déterministes et sauvegarde AsyncStorage versionnée.
