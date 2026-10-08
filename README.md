@@ -24,6 +24,34 @@ npm test
 npx expo install --check
 ```
 
+## Builds EAS et GitHub
+
+`eas.json` se trouve à la racine de ce dépôt, à côté de `package.json`.
+Les profils disponibles sont `development` (client de développement pour appareil),
+`simulator` (client iOS pour simulateur), `preview` (distribution interne sans
+outils de développement) et `production` (App Store/TestFlight ou Google Play).
+Ils utilisent Node.js 22.13.0 et les images EAS `latest`, explicitement configurées
+pour les builds GitHub. Les numéros de build de production sont gérés et incrémentés
+par EAS. Les rappels sont locaux : aucune configuration de notifications push
+distantes n’est demandée.
+
+Pour lancer depuis GitHub, commiter et pousser `eas.json` dans la branche choisie.
+Dans les réglages GitHub du projet Expo, laisser « Base directory » vide : le
+dossier local s’appelle `app/`, mais son contenu constitue la racine du dépôt
+`Olivier9925/tamakoro`. Choisir ensuite le profil voulu, par exemple `production`
+pour iOS/TestFlight. Un build ne soumet pas automatiquement l’application aux stores.
+
+Expo demande également un premier build EAS réussi depuis la machine locale pour
+chaque plateforme afin d’initialiser le projet et ses éléments de signature.
+Utiliser le projet Expo existant lors de cette configuration ; ne pas créer un doublon.
+`app.json` devra contenir son identifiant réel dans `extra.eas.projectId`, et Android
+nécessite son identifiant d’application `android.package` avant son premier build.
+Les identifiants de projet et de signature se configurent avec le compte propriétaire ;
+aucune valeur ni aucun secret ne sont inventés dans le dépôt.
+
+Voir les guides officiels : [configuration EAS](https://docs.expo.dev/build/eas-json/)
+et [builds depuis GitHub](https://docs.expo.dev/build/building-from-github/).
+
 ## Organisation
 
 - `src/app/` : routes Expo Router, adoption et écran de soins.

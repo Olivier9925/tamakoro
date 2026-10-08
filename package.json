@@ -58,7 +58,7 @@
     "build:preview": "npx eas-cli@latest build --profile preview",
     "build:prod": "npx eas-cli@latest build --profile production",
     "build:ios:local": "npx eas-cli@latest build --profile production --platform ios --local",
-    "build:sim:local": "npx eas-cli@latest build --profile development --platform ios --local",
+    "build:sim:local": "npx eas-cli@latest build --profile simulator --platform ios --local",
     "build:testflight": "npx eas-cli@latest build --profile production --platform ios --auto-submit",
     "submit:ios": "npx eas-cli@latest submit -p ios --latest",
     "submit:testflight": "npx eas-cli@latest submit -p ios --latest --profile production",
