@@ -90,7 +90,12 @@ les absences et le décès à santé zéro. La route modale `/help` conserve l�
 de jeu en place ; « × » ferme l’aide, ou revient à l’accueil si elle a été ouverte
 directement. Le guide défile sur les petits écrans et avec des textes agrandis.
 
-L’encart « Rappels » du guide propose un rappel quotidien local, désactivé par
+La roue dentée à gauche du titre ouvre l’écran dédié « Paramètres » (`/settings`).
+Le bouton « ? » à droite reste réservé au guide. Les deux écrans gardent le style
+terminal, conservent la partie en place et se ferment avec « × » ; une ouverture
+directe revient à l’accueil. Les touches de l’en-tête font au moins 44 × 44 points.
+
+L’encart « Rappels » des paramètres propose un rappel quotidien local, désactivé par
 défaut, à 19 h (horaire configurable avec le sélecteur natif). L’autorisation
 du téléphone est demandée uniquement lorsque le joueur active l’option. Un refus
 laisse le rappel désactivé et donne accès aux réglages du téléphone. Une révocation
