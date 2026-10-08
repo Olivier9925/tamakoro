@@ -44,15 +44,42 @@ pour iOS/TestFlight. Un build ne soumet pas automatiquement l’application aux 
 Expo demande également un premier build EAS réussi depuis la machine locale pour
 chaque plateforme afin d’initialiser le projet et ses éléments de signature.
 Utiliser le projet Expo existant lors de cette configuration ; ne pas créer un doublon.
-`app.json` devra contenir son identifiant réel dans `extra.eas.projectId`, et Android
-nécessite son identifiant d’application `android.package` avant son premier build.
+`app.json` est associé au projet existant `@olivier9925/tamakoro-virtual-pet` :
+le champ `owner`, le `slug` et `extra.eas.projectId` correspondent à ce projet.
+Ces champs doivent être commités et poussés dans la branche utilisée par Expo.
+Ils évitent l’erreur « EAS project not configured » en mode non interactif.
+`eas project:info` permet de vérifier cette association sans lancer de build.
+Android nécessite son identifiant d’application `android.package` avant son premier build.
 Les identifiants de projet et de signature se configurent avec le compte propriétaire ;
 aucune valeur ni aucun secret ne sont inventés dans le dépôt.
+
+La section `submit.production.ios` d’`eas.json` configure uniquement l’envoi vers
+App Store Connect/TestFlight. `appleId`, `appleTeamId` et `ascAppId` ne remplacent
+pas `extra.eas.projectId`. Lors de la configuration de la soumission, utiliser
+l’identifiant numérique réel de la fiche App Store Connect pour `ascAppId`, jamais
+une valeur masquée comme `***`. Un simple build GitHub ne nécessite pas ce bloc.
 
 Voir les guides officiels : [configuration EAS](https://docs.expo.dev/build/eas-json/)
 et [builds depuis GitHub](https://docs.expo.dev/build/building-from-github/).
 
 ## Organisation
+
+Le démarrage affiche l’incubateur pixelisé plein écran et le titre central Tamakoro.
+Les SVG et PNG `assets/images/tamakoro-splash*` reprennent les dessins du jeu ;
+`node scripts/generate-splash.cjs` régénère les SVG. Pour les PNG, fournir le chemin
+d’un module Sharp installé avec `SHARP_MODULE=/chemin/vers/sharp` à la même commande.
+Le PNG portrait est rasterisé à 360 × 780 puis agrandi sans lissage.
+
+Sur iOS, le plugin `expo-splash-screen` utilise actuellement l’option native
+`enableFullScreenImage_legacy` (à remplacer lorsqu’Expo la retirera). Android affiche
+d’abord le logo sur fond bleu nuit, conformément à son écran système, puis le même
+incubateur plein écran. Le calque React est visible environ 1,1 seconde une fois
+l’image chargée ; les routes et la sauvegarde se chargent derrière. Il ne se rejoue
+pas à chaque retour au premier plan. Le mode clair et sombre partagent ce visuel.
+Recompiler après modification du splash natif : `npm run prebuild:ios`, puis
+`npm run ios:release` pour une vérification fidèle (ou équivalents Android).
+Expo Go et les development builds ne reproduisent pas entièrement le splash natif,
+voir [la documentation du SDK 57](https://docs.expo.dev/versions/v57.0.0/sdk/splash-screen/).
 
 - `src/app/` : routes Expo Router, adoption et écran de soins.
 - `src/components/` : sprite pixel art provisoire et palettes.

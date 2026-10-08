@@ -1,7 +1,8 @@
 {
   "expo": {
     "name": "Tamakoro – Virtual Pet",
-    "slug": "tamakoro",
+    "slug": "tamakoro-virtual-pet",
+    "owner": "olivier9925",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/tamakoro-icon-v2.png",
@@ -25,12 +26,22 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "backgroundColor": "#090f18",
+          "image": "./assets/images/tamakoro-splash-logo.png",
+          "imageWidth": 280,
+          "ios": {
+            "image": "./assets/images/tamakoro-splash.png",
+            "enableFullScreenImage_legacy": true,
+            "resizeMode": "cover"
+          }
         }
       ]
     ],
+    "extra": {
+      "eas": {
+        "projectId": "3862ae69-f19a-49b0-b30a-22adc0d09f56"
+      }
+    },
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
