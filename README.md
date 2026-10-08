@@ -155,9 +155,17 @@ regard à gauche, regard à droite et clignement. Reanimated alterne ces sprites
 sans interpolation, sur un cycle de huit secondes. Pendant le sommeil, seuls deux
 sprites aux yeux fermés alternent doucement sur quatre secondes. L’animation se
 met en pause en arrière-plan et reste fixe si la réduction des animations est activée.
-Les sept silhouettes partagent un canevas de 32 × 32 pixels, avec une taille,
-des nageoires et une couronne qui se développent. Chaque stade et chaque palette
+Les sept silhouettes sont dessinées en SVG sur un canevas de 160 × 160 unités :
+contours courbes, ombres douces, iris avec reflets, joues et feuilles nervurées.
+La taille, les feuilles latérales et la couronne se développent avec l’âge ; un
+collier apparaît à l’adolescence et un bourgeon distingue les formes matures.
+Les pieds gardent un ancrage commun pendant la respiration. L’affichage s’adapte
+sans arrondi à la place disponible dans l’incubateur. Chaque stade et chaque palette
 ont leurs propres sprites animés, générés et mis en cache au premier affichage.
+
+`SHARP_MODULE=/chemin/vers/sharp node scripts/preview-pet-sprites.cjs` crée un
+aperçu HTML autonome dans `docs/pet-sprites/` et rasterise les 147 poses pour
+vérifier la transparence, l’absence de rognage et l’ancrage des pieds.
 
 L’écran de soins adapte la hauteur de l’incubateur à l’espace disponible. Les cinq
 jauges fluorescentes et les cinq touches de soin sont regroupées sur deux rangées

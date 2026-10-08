@@ -27,7 +27,7 @@ export function IncubatorScene({ appearance, stageIndex = 0, sleeping = false, d
       {dead ? <Text accessibilityLabel="Incubateur vide, en souvenir du Tamakoro"
         style={{ color: '#a3bcc0', fontSize: 18, paddingBottom: 12 }}>✦</Text> :
         <PixelPet appearance={appearance} stageIndex={stageIndex} sleeping={sleeping}
-          pixelSize={Math.max(1, Math.floor(Math.min(width * 0.6 / SPRITE_SIZE, (height ?? width * 400 / 360) * 0.43 / SPRITE_SIZE)))} />}
+          pixelSize={Math.max(1, Math.min(width * 0.6 / SPRITE_SIZE, (height ?? width * 400 / 360) * 0.43 / SPRITE_SIZE))} />}
     </View>
   </View>;
 }
