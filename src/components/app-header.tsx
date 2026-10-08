@@ -1,5 +1,6 @@
 import { Image } from 'expo-image';
-import { Text, View } from 'react-native';
+import { Link, router } from 'expo-router';
+import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TERMINAL_FONT, WORDMARK_SOURCE } from '@/components/digital-art';
 
@@ -10,8 +11,18 @@ function Screw() {
   </View>;
 }
 
-export function AppHeader() {
+export function AppHeader({ helpOpen = false }: { helpOpen?: boolean }) {
   const insets = useSafeAreaInsets();
+  const helpKey = <Pressable accessibilityRole="button"
+    accessibilityLabel={helpOpen ? 'Fermer l’aide' : 'Ouvrir l’aide'}
+    onPress={helpOpen ? () => { if (router.canGoBack()) router.back(); else router.replace('/'); } : undefined}
+    style={({ pressed }) => ({ minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center',
+      borderRadius: 8, borderWidth: 1, borderTopWidth: 2, borderBottomWidth: 3,
+      borderColor: '#597a68', borderTopColor: '#a9d875', backgroundColor: pressed ? '#2a4437' : '#192d28',
+      transform: [{ translateY: pressed ? 2 : 0 }], boxShadow: '0 2px 0 #03080d' })}>
+    <Text accessible={false} style={{ color: '#d4fbb5', fontFamily: TERMINAL_FONT,
+      fontSize: 24, fontWeight: '700' }}>{helpOpen ? '×' : '?'}</Text>
+  </Pressable>;
   return <View style={{ paddingTop: insets.top, backgroundColor: '#0b131c',
     borderBottomWidth: 1, borderBottomColor: '#263b46' }}>
     <View style={{ width: '100%', maxWidth: 560, alignSelf: 'center', paddingHorizontal: 14,
@@ -27,11 +38,7 @@ export function AppHeader() {
           <Text accessible={false} style={{ color: '#91abb7', fontFamily: TERMINAL_FONT,
             fontSize: 8, letterSpacing: 2 }}>COMPAGNON VIRTUEL</Text>
         </View>
-        <View accessible={false} importantForAccessibility="no-hide-descendants" style={{ gap: 10, alignItems: 'center' }}>
-          <Screw />
-          <View style={{ width: 5, height: 5, borderRadius: 1, backgroundColor: '#9ded72', boxShadow: '0 0 5px #9ded7299' }} />
-          <Screw />
-        </View>
+        {helpOpen ? helpKey : <Link href="/help" asChild>{helpKey}</Link>}
       </View>
     </View>
   </View>;

@@ -83,6 +83,13 @@ points et quelques pistes périphériques, sans animation ni ressource distante.
 Les messages de soin et de sauvegarde sont regroupés dans un cartouche de terminal
 qui partage le fond, la bordure en relief et la police du cartouche du nom.
 
+Le bouton « ? » de l’en-tête ouvre à tout moment un guide hors ligne, avant
+l’adoption comme pendant la partie ou sur l’écran souvenir. Il explique les effets
+des soins, le réveil manuel, les formes tous les 15 jours jusqu’à 90 jours,
+les absences et le décès à santé zéro. La route modale `/help` conserve l’écran
+de jeu en place ; « × » ferme l’aide, ou revient à l’accueil si elle a été ouverte
+directement. Le guide défile sur les petits écrans et avec des textes agrandis.
+
 ### Règles de départ à ajuster
 
 Toutes les jauges vont de 0 à 100 ; une valeur haute signifie que le besoin est satisfait
