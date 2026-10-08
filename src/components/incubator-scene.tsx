@@ -7,7 +7,7 @@ import { PixelPet } from '@/components/pixel-pet';
 import { SPRITE_SIZE } from '@/components/pet-sprite-art';
 import type { Appearance } from '@/game/pet';
 
-export function IncubatorScene({ appearance, stageIndex = 0, sleeping = false, height }: { appearance: Appearance; stageIndex?: number; sleeping?: boolean; height?: number }) {
+export function IncubatorScene({ appearance, stageIndex = 0, sleeping = false, dead = false, height }: { appearance: Appearance; stageIndex?: number; sleeping?: boolean; dead?: boolean; height?: number }) {
   const [width, setWidth] = useState(320);
   return <View onLayout={event => setWidth(event.nativeEvent.layout.width)}
     style={{ width: '100%', height, aspectRatio: height ? undefined : 360 / 400, overflow: 'hidden', borderRadius: 20, backgroundColor: '#0c1822' }}>
@@ -24,8 +24,10 @@ export function IncubatorScene({ appearance, stageIndex = 0, sleeping = false, h
     </View>
     <View style={{ position: 'absolute', top: '36%', bottom: '21%', left: '20%', right: '20%',
       justifyContent: 'flex-end', alignItems: 'center' }}>
-      <PixelPet appearance={appearance} stageIndex={stageIndex} sleeping={sleeping}
-        pixelSize={Math.max(1, Math.floor(Math.min(width * 0.6 / SPRITE_SIZE, (height ?? width * 400 / 360) * 0.43 / SPRITE_SIZE)))} />
+      {dead ? <Text accessibilityLabel="Incubateur vide, en souvenir du Tamakoro"
+        style={{ color: '#a3bcc0', fontSize: 18, paddingBottom: 12 }}>✦</Text> :
+        <PixelPet appearance={appearance} stageIndex={stageIndex} sleeping={sleeping}
+          pixelSize={Math.max(1, Math.floor(Math.min(width * 0.6 / SPRITE_SIZE, (height ?? width * 400 / 360) * 0.43 / SPRITE_SIZE)))} />}
     </View>
   </View>;
 }

@@ -24,8 +24,8 @@ export const GROWTH_STAGES = [
 ] as const;
 
 // Derive growth from the existing timestamps: no save-format migration is needed.
-export function petGrowth(pet: Pick<Pet, 'createdAt' | 'updatedAt'>, now: number) {
-  const age = Math.max(0, Math.max(now, pet.updatedAt) - pet.createdAt);
+export function petGrowth(pet: Pick<Pet, 'createdAt' | 'updatedAt' | 'needs'>, now: number) {
+  const age = Math.max(0, (pet.needs.health === 0 ? pet.updatedAt : Math.max(now, pet.updatedAt)) - pet.createdAt);
   const stageIndex = Math.min(6, Math.floor(age / (15 * DAY)));
   const stage = GROWTH_STAGES[stageIndex];
   const next = GROWTH_STAGES[stageIndex + 1];
@@ -34,6 +34,22 @@ export function petGrowth(pet: Pick<Pet, 'createdAt' | 'updatedAt'>, now: number
     progress: next ? (age / DAY - stage.day) / 15 : 1 };
 }
 const clamp = (value: number) => Math.max(0, Math.min(100, value));
+
+export const NEED_WARNING: Record<Need, number> = { food: 25, energy: 25, hygiene: 25, mood: 30, health: 40 };
+export function needSeverity(key: Need, value: number): 'normal' | 'warning' | 'critical' {
+  if (value < (key === 'energy' ? 10 : 20)) return 'critical';
+  return value < NEED_WARNING[key] ? 'warning' : 'normal';
+}
+export function isPetDead(pet: Pet) { return pet.needs.health === 0; }
+
+export function petHealthAlert(pet: Pet) {
+  if (isPetDead(pet)) return `${pet.name} est décédé. Les soins et la croissance sont arrêtés.`;
+  const causes = [pet.needs.food < 20 ? 'satiété' : null,
+    pet.needs.hygiene < 20 ? 'hygiène' : null, pet.needs.mood < 20 ? 'humeur' : null].filter(Boolean);
+  if (causes.length) return `${pet.needs.health < 20 ? 'Danger de mort. ' : ''}Santé −2/h : ${causes.join(', ')} sous 20. Nourrir, nettoyer ou jouer permet de corriger ces besoins ; hydrater rend 5 points de santé.`;
+  if (pet.needs.health < 40) return 'Santé fragile. Elle remonte de 1/h lorsque satiété, hygiène et humeur restent à 20 ou plus. Hydrater rend 5 points.';
+  return null;
+}
 
 export function createPet(name: string, appearance: Appearance, now: number): Pet {
   const trimmed = name.trim();
@@ -44,11 +60,12 @@ export function createPet(name: string, appearance: Appearance, now: number): Pe
 
 // Rates per hour. Segmenting at care thresholds keeps health independent of refresh frequency.
 export function advancePet(pet: Pet, now: number): Pet {
-  if (now <= pet.updatedAt) return pet;
+  if (isPetDead(pet) || now <= pet.updatedAt) return pet;
   const hours = (now - pet.updatedAt) / HOUR;
   const rates = { food: -4, energy: pet.sleeping ? 18 : -3, hygiene: -2, mood: pet.sleeping ? -1 : -2 };
   const needs = { ...pet.needs };
   const breaks = [0, hours];
+  let elapsed = hours;
   for (const key of ['food', 'hygiene', 'mood'] as const) {
     const crossing = (20 - needs[key]) / rates[key];
     if (crossing > 0 && crossing < hours) breaks.push(crossing);
@@ -60,16 +77,23 @@ export function advancePet(pet: Pet, now: number): Pet {
     const middle = (start + end) / 2;
     const struggling = (['food', 'hygiene', 'mood'] as const)
       .some(key => clamp(pet.needs[key] + rates[key] * middle) < 20);
-    needs.health = Math.max(25, Math.min(100, needs.health + (struggling ? -2 : 1) * (end - start)));
+    if (struggling && needs.health <= 2 * (end - start)) {
+      elapsed = start + needs.health / 2;
+      needs.health = 0;
+      break;
+    }
+    needs.health = clamp(needs.health + (struggling ? -2 : 1) * (end - start));
   }
   for (const key of ['food', 'energy', 'hygiene', 'mood'] as const) {
-    needs[key] = clamp(needs[key] + rates[key] * hours);
+    needs[key] = clamp(needs[key] + rates[key] * elapsed);
   }
-  return { ...pet, updatedAt: now, needs };
+  return { ...pet, updatedAt: elapsed === hours ? now : pet.updatedAt + elapsed * HOUR,
+    sleeping: needs.health === 0 ? false : pet.sleeping, needs };
 }
 
 export function careForPet(pet: Pet, action: Action, now: number): Pet {
   const next = advancePet(pet, now);
+  if (isPetDead(next)) return next;
   if (action === 'sleep') return { ...next, sleeping: !next.sleeping };
   if (next.sleeping) return next;
   const needs = { ...next.needs };
@@ -82,12 +106,14 @@ export function careForPet(pet: Pet, action: Action, now: number): Pet {
 }
 
 export function petMood(pet: Pet) {
+  if (isPetDead(pet)) return 'Décédé';
+  if (pet.needs.health < 20) return 'Danger de mort';
+  if (pet.needs.health < NEED_WARNING.health) return 'Besoin de soins';
   if (pet.sleeping) return 'Endormi';
-  if (pet.needs.health < 40) return 'Besoin de soins';
-  if (pet.needs.food < 25) return 'Un petit creux';
-  if (pet.needs.energy < 25) return 'Fatigué';
-  if (pet.needs.hygiene < 25) return 'Besoin d’un bain';
-  if (pet.needs.mood < 30) return 'Envie de jouer';
+  if (pet.needs.food < NEED_WARNING.food) return 'Un petit creux';
+  if (pet.needs.energy < NEED_WARNING.energy) return 'Fatigué';
+  if (pet.needs.hygiene < NEED_WARNING.hygiene) return 'Besoin d’un bain';
+  if (pet.needs.mood < NEED_WARNING.mood) return 'Envie de jouer';
   return 'Heureux';
 }
 

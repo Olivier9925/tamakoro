@@ -60,6 +60,7 @@ et adulte à 90 jours. L’âge provient des horodatages existants, même hors l
 sans changer le format des sauvegardes. Les besoins et le sommeil ne bloquent pas
 la croissance. L’écran affiche le stade et le délai avant la prochaine évolution ;
 un message annonce les changements constatés, y compris au retour après une absence.
+La croissance s’arrête au décès.
 
 Chaque forme dispose de cinq poses SVG générées en code : repos, inspiration,
 regard à gauche, regard à droite et clignement. Reanimated alterne ces sprites
@@ -88,7 +89,21 @@ Toutes les jauges vont de 0 à 100 ; une valeur haute signifie que le besoin est
 (« Satiété » évite l’ambiguïté d’une jauge de faim). Par heure : satiété −4, énergie −3,
 hygiène −2, humeur −2. Pendant le sommeil : énergie +18 et humeur −1.
 Si satiété, hygiène ou humeur descend sous 20, la santé baisse de 2 par heure ;
-sinon elle remonte de 1. La santé ne descend pas sous 25 : aucune perte irréversible.
+sinon elle remonte de 1. La santé peut descendre jusqu’à zéro : le Tamakoro décède
+alors, même durant une absence ou son sommeil. La perte reste de 2/h lorsqu’il y a
+plusieurs besoins critiques. L’énergie seule ne provoque pas une perte de santé.
+Sans aucun soin, un nouveau compagnon décède après 66 h 15 min. L’instant du décès
+est calculé précisément, indépendamment du nombre de rafraîchissements ; son état
+et sa croissance sont ensuite figés, et aucun soin ne peut le ressusciter.
+Le décès est enregistré immédiatement. L’incubateur devient un souvenir avec la
+date du décès ; une nouvelle adoption nécessite une validation explicite avant de
+remplacer la partie. Le format v1 et la clé de sauvegarde existants sont conservés :
+une santé à zéro suffit à identifier cet état. Cette règle de mort remplace, à la
+demande du joueur, la protection initiale du MVP contre les pertes irréversibles.
+
+Les alertes commencent sous 25 pour satiété, énergie et hygiène, sous 30 pour
+humeur et sous 40 pour santé. Les jauges deviennent rouges sous 20 (sous 10 pour
+énergie), et le cartouche explique les causes de la baisse de santé et les soins.
 Les soins et leurs effets sont expliqués dans l’écran. Le sommeil dure jusqu’au réveil
 manuel. Le temps est calculé à partir de l’horodatage sauvegardé, sans exécution en arrière-plan.
 Un recul de l’horloge ne fait pas reculer l’état de la créature.

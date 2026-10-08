@@ -7,7 +7,7 @@ const { test, after } = require('node:test');
 const output = mkdtempSync(join(tmpdir(), 'tamakoro-tests-'));
 execFileSync(process.execPath, ['node_modules/typescript/bin/tsc', 'src/game/pet.ts', '--outDir', output,
   '--module', 'commonjs', '--target', 'es2020', '--skipLibCheck', '--strict', '--ignoreConfig']);
-const { createPet, advancePet, careForPet, parsePet, petGrowth, GROWTH_STAGES, DAY, HOUR, NEEDS } = require(join(output, 'pet.js'));
+const { createPet, advancePet, careForPet, parsePet, petGrowth, petMood, petHealthAlert, needSeverity, isPetDead, GROWTH_STAGES, DAY, HOUR, NEEDS } = require(join(output, 'pet.js'));
 after(() => rmSync(output, { recursive: true, force: true }));
 const birth = 100000;
 const initial = () => createPet(' Momo ', 'leaf', birth);
@@ -26,7 +26,8 @@ test('long absences and frequent refreshes produce the same state', () => {
   let frequent = initial();
   for (let i = 1; i <= 800; i++) frequent = advancePet(frequent, birth + i * HOUR / 10);
   for (const key of NEEDS) assert.ok(Math.abs(once.needs[key] - frequent.needs[key]) < 1e-8, key);
-  assert.equal(once.needs.health, 25);
+  assert.equal(once.needs.health, 0);
+  assert.ok(Math.abs(once.updatedAt - frequent.updatedAt) < 1);
 });
 test('sleep recovers energy while other needs evolve; wake resumes care', () => {
   const tired = { ...initial(), needs: { ...initial().needs, energy: 10 } };
@@ -78,7 +79,7 @@ test('growth changes exactly at each 15-day boundary and stops at adulthood', ()
 });
 test('growth survives offline absences, old saves, sleep and clock rollback', () => {
   const oldSave = parsePet(JSON.stringify(initial()));
-  const grown = advancePet(oldSave, birth + 77 * DAY);
+  const grown = { ...oldSave, updatedAt: birth + 77 * DAY };
   assert.equal(petGrowth(grown, grown.updatedAt).stageIndex, 5);
   assert.equal(petGrowth(grown, birth).stageIndex, 5);
   assert.equal(petGrowth({ ...grown, sleeping: true }, grown.updatedAt).stageIndex, 5);
@@ -86,4 +87,57 @@ test('growth survives offline absences, old saves, sleep and clock rollback', ()
   assert.equal(petGrowth(grown, grown.updatedAt).daysUntilNext, 13);
   assert.equal(petGrowth(initial(), birth - DAY).ageDays, 0);
   assert.deepEqual(petGrowth(oldSave, birth + 77 * DAY), petGrowth(grown, grown.updatedAt));
+});
+
+test('each prolonged critical need can lower health below 25 and cause death', () => {
+  for (const cause of ['food', 'hygiene', 'mood']) {
+    const pet = { ...initial(), needs: { food: 100, energy: 100, hygiene: 100, mood: 100, health: 26, [cause]: 0 } };
+    assert.equal(advancePet(pet, birth + HOUR).needs.health, 24);
+    const dead = advancePet(pet, birth + 14 * HOUR);
+    assert.equal(dead.needs.health, 0);
+    assert.equal(dead.updatedAt, birth + 13 * HOUR);
+    assert.equal(isPetDead(dead), true);
+  }
+});
+test('death is calculated at the exact instant, including offline and during sleep', () => {
+  for (const sleeping of [false, true]) {
+    const pet = { ...initial(), sleeping };
+    const deathTime = birth + 66.25 * HOUR;
+    assert.ok(advancePet(pet, deathTime - 1).needs.health > 0);
+    const dead = advancePet(pet, deathTime);
+    assert.equal(dead.needs.health, 0);
+    assert.equal(dead.updatedAt, deathTime);
+    assert.equal(dead.sleeping, false);
+    assert.deepEqual(advancePet(pet, birth + 100 * DAY), dead);
+    assert.deepEqual(parsePet(JSON.stringify(dead)), dead);
+  }
+});
+test('dead pets cannot be revived by care, time or clock rollback; growth freezes', () => {
+  const dead = advancePet(initial(), birth + 100 * DAY);
+  for (const action of ['feed', 'hydrate', 'clean', 'play', 'sleep']) {
+    assert.deepEqual(careForPet(dead, action, birth + 101 * DAY), dead);
+    assert.deepEqual(careForPet(initial(), action, birth + 100 * DAY), dead);
+  }
+  assert.deepEqual(advancePet(dead, birth), dead);
+  assert.deepEqual(petGrowth(dead, birth + 100 * DAY), petGrowth(dead, dead.updatedAt));
+  assert.equal(petMood(dead), 'Décédé');
+});
+test('care before death can correct critical needs and recover health', () => {
+  const fragile = { ...initial(), needs: { food: 19, energy: 80, hygiene: 80, mood: 80, health: 10 } };
+  const fed = careForPet(fragile, 'feed', birth);
+  const hydrated = careForPet(fed, 'hydrate', birth);
+  assert.equal(advancePet(hydrated, birth + HOUR).needs.health, 16);
+  const almostDead = { ...fragile, needs: { ...fragile.needs, health: 0.001 } };
+  assert.equal(isPetDead(almostDead), false);
+  assert.equal(needSeverity('health', almostDead.needs.health), 'critical');
+});
+test('warnings match mood thresholds and critical health is visible while sleeping', () => {
+  for (const [key, boundary] of [['food', 25], ['energy', 25], ['hygiene', 25], ['mood', 30], ['health', 40]]) {
+    assert.equal(needSeverity(key, boundary), 'normal');
+    assert.equal(needSeverity(key, boundary - 0.01), 'warning');
+  }
+  const danger = { ...initial(), sleeping: true, needs: { ...initial().needs, food: 0, health: 19 } };
+  assert.equal(petMood(danger), 'Danger de mort');
+  assert.match(petHealthAlert(danger), /Danger de mort/);
+  assert.match(petHealthAlert(danger), /satiété/);
 });

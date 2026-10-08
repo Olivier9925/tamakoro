@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
-import { advancePet, careForPet, createPet, petGrowth, type Action, type Appearance, type Pet } from '@/game/pet';
+import { advancePet, careForPet, createPet, isPetDead, petGrowth, petHealthAlert, type Action, type Appearance, type Pet } from '@/game/pet';
 import { loadPet, savePet } from '@/game/storage';
 
 function growthNotice(previous: Pet, next: Pet) {
+  if (isPetDead(next)) return isPetDead(previous) ? null : petHealthAlert(next);
   const before = petGrowth(previous, previous.updatedAt);
   const after = petGrowth(next, next.updatedAt);
   return after.stageIndex > before.stageIndex ? `${next.name} a évolué : ${after.stage.label} !` : null;
@@ -35,11 +36,14 @@ export function usePet() {
         if (notice) setMessage(notice);
       }
       current.current = value; setPet(value); setLoadFailed(false);
+      if (value && isPetDead(value) && saved && !isPetDead(saved)) {
+        void persist(value).then(() => setSaveFailed(false), () => setSaveFailed(true));
+      }
     }).catch(cause => {
       setLoadFailed(true);
       setError(cause instanceof Error ? cause.message : 'Impossible de lire la partie. Réessaie.');
     }).finally(() => setLoading(false));
-  }, []);
+  }, [persist]);
   useEffect(() => { void load(); }, [load]);
   useEffect(() => {
     const refresh = () => {
@@ -48,28 +52,32 @@ export function usePet() {
       const notice = growthNotice(current.current, value);
       if (notice) setMessage(notice);
       current.current = value; setPet(value);
+      if (isPetDead(value) && notice) {
+        void persist(value).then(() => setSaveFailed(false), () => setSaveFailed(true));
+      }
     };
     const timer = setInterval(() => { if (AppState.currentState === 'active') refresh(); }, 30_000);
     const subscription = AppState.addEventListener('change', state => {
       if (state === 'active') refresh();
-      else if (current.current) {
+      else if (current.current && !locked.current) {
         void persist(current.current).then(() => setSaveFailed(false), () => setSaveFailed(true));
       }
     });
     return () => { clearInterval(timer); subscription.remove(); };
   }, [persist]);
   const adopt = async (name: string, appearance: Appearance) => {
-    if (locked.current || loadFailed) return;
+    if (locked.current || loadFailed || (current.current && !isPetDead(current.current))) return false;
     locked.current = true; setBusy(true); setError(null);
     try {
       const value = createPet(name, appearance, Date.now());
       await persist(value);
-      current.current = value; setPet(value); setMessage(`Bienvenue, ${value.name} !`);
-    } catch { setError('Adoption non sauvegardée. Réessaie.'); }
+      current.current = value; setPet(value); setSaveFailed(false); setMessage(`Bienvenue, ${value.name} !`);
+      return true;
+    } catch { setError('Adoption non sauvegardée. Réessaie.'); return false; }
     finally { locked.current = false; setBusy(false); }
   };
   const care = async (action: Action) => {
-    if (!current.current || locked.current) return;
+    if (!current.current || locked.current || isPetDead(current.current)) return;
     if (current.current.sleeping && action !== 'sleep') return;
     locked.current = true; setBusy(true);
     const previous = current.current;
@@ -83,7 +91,7 @@ export function usePet() {
       sleep: value.sleeping ? 'Au repos : énergie +18 par heure. Les autres besoins continuent d’évoluer.' : 'Bien réveillé ! Les soins sont disponibles.',
     };
     const notice = growthNotice(previous, value);
-    setMessage(notice ? `${notice} ${messages[action]}` : `${messages[action]} Les jauges restent entre 0 et 100.`);
+    setMessage(isPetDead(value) ? petHealthAlert(value)! : notice ? `${notice} ${messages[action]}` : `${messages[action]} Les jauges restent entre 0 et 100.`);
     try { await persist(value); setSaveFailed(false); }
     catch { setSaveFailed(true); }
     finally { locked.current = false; setBusy(false); }
