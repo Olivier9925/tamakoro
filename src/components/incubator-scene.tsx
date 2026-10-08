@@ -22,7 +22,7 @@ export function IncubatorScene({ appearance, sleeping = false, height }: { appea
     <View style={{ position: 'absolute', top: '36%', bottom: '21%', left: '20%', right: '20%',
       justifyContent: 'flex-end', alignItems: 'center' }}>
       <PixelPet appearance={appearance} sleeping={sleeping}
-        pixelSize={Math.max(1, Math.floor(Math.min(width / 32, (height ?? width * 400 / 360) * 0.43 / 16)))} />
+        pixelSize={Math.max(1, Math.floor(Math.min(width / 32, (height ?? width * 400 / 360) * 0.43 / 17)))} />
     </View>
   </View>;
 }

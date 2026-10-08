@@ -45,7 +45,13 @@ et affiché avec `expo-image`, déjà installé. Caméra, batterie, puces, nappe
 et chambre lumineuse reprennent les références de `../sources/`. La lumière devient
 bleue pendant le sommeil. Le décor fonctionne hors ligne, sans nouvelle dépendance,
 et s’adapte à la largeur disponible. Le sprite de la créature reste provisoire ;
-les ressources finales et animations restent à intégrer.
+les ressources finales restent à intégrer.
+
+La créature dispose de cinq poses SVG générées en code : repos, inspiration,
+regard à gauche, regard à droite et clignement. Reanimated alterne ces sprites
+sans interpolation, sur un cycle de huit secondes. Pendant le sommeil, seuls deux
+sprites aux yeux fermés alternent doucement sur quatre secondes. L’animation se
+met en pause en arrière-plan et reste fixe si la réduction des animations est activée.
 
 L’écran de soins adapte la hauteur de l’incubateur à l’espace disponible. Les cinq
 jauges fluorescentes et les cinq touches de soin sont regroupées sur deux rangées

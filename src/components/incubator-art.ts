@@ -1,3 +1,5 @@
+import { svgSource } from '@/utils/svg-source';
+
 // Original vector scenery inspired by the smartphone cutaway references in ../sources/.
 // Generated once per lighting state; all geometry stays local and resolution independent.
 const rect = (x: number, y: number, w: number, h: number, fill: string, extra = '') =>
@@ -117,21 +119,6 @@ export function createIncubatorSvg(sleeping: boolean) {
     ${rect(307, 238, 18, 22, '#102432')}${rect(312, 240, 7, 17, '#7ce5f0')}
     ${rect(29, 369, 22, 8, '#102432')}${rect(33, 371, 14, 3, '#7ce5f0')}
   </svg>`;
-}
-
-// expo-image's Android data-URI loader requires Base64. The generated SVG is ASCII.
-function svgSource(svg: string) {
-  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-  let encoded = '';
-  for (let i = 0; i < svg.length; i += 3) {
-    const a = svg.charCodeAt(i);
-    const b = svg.charCodeAt(i + 1) || 0;
-    const c = svg.charCodeAt(i + 2) || 0;
-    encoded += alphabet[a >> 2] + alphabet[((a & 3) << 4) | (b >> 4)]
-      + (i + 1 < svg.length ? alphabet[((b & 15) << 2) | (c >> 6)] : '=')
-      + (i + 2 < svg.length ? alphabet[c & 63] : '=');
-  }
-  return { uri: `data:image/svg+xml;base64,${encoded}` };
 }
 
 export const INCUBATOR_SOURCES = {
