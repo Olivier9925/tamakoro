@@ -2,7 +2,8 @@ import { Button, Host } from '@expo/ui';
 import { useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { APPEARANCES, PixelPet } from '@/components/pixel-pet';
+import { APPEARANCES } from '@/components/pixel-pet';
+import { IncubatorScene } from '@/components/incubator-scene';
 import { HOUR, NEEDS, petMood, type Action, type Appearance, type Need } from '@/game/pet';
 import { usePet } from '@/hooks/use-pet';
 
@@ -40,9 +41,7 @@ export default function HomeScreen() {
       <Text style={{ color: colors.muted, fontSize: 17, lineHeight: 25 }}>
         Adopte un Tamakoro, prends soin de lui et retrouve-le chaque jour. Tout se passe ici, même hors ligne.
       </Text>
-      <View style={{ alignItems: 'center', padding: 24, backgroundColor: colors.panel, borderRadius: 24 }}>
-        <PixelPet appearance={appearance} />
-      </View>
+      <IncubatorScene appearance={appearance} />
       {game.error && <Text accessibilityRole="alert" selectable style={{ color: '#ffb2a5' }}>{game.error}</Text>}
       {game.loadFailed ? <Control label="Relire la sauvegarde" onPress={() => { void game.load(); }} /> : <>
         <Text style={{ color: colors.text, fontSize: 16, fontWeight: '600' }}>Comment s’appelle-t-il ?</Text>
@@ -67,17 +66,7 @@ export default function HomeScreen() {
         </View>
         <Text style={{ color: colors.accent, padding: 10, backgroundColor: colors.panel, borderRadius: 12 }}>{petMood(pet)}</Text>
       </View>
-      <View style={{ height: 280, backgroundColor: '#142f39', borderRadius: 24, borderWidth: 1,
-        borderColor: '#315360', justifyContent: 'center', alignItems: 'center', overflow: 'hidden', gap: 10 }}>
-        <View pointerEvents="none" style={{ position: 'absolute', left: 14, top: 18, gap: 12 }}>
-          {[0, 1, 2, 3].map(index => <View key={index} style={{ width: 38, height: 26, borderWidth: 2, borderColor: '#2b4b56', backgroundColor: '#10252e' }} />)}
-        </View>
-        <View pointerEvents="none" style={{ position: 'absolute', right: 14, top: 18, width: 26, height: 100,
-          borderWidth: 2, borderColor: '#2b4b56', backgroundColor: '#10252e' }} />
-        <Text style={{ color: '#789b9e', fontSize: 10, letterSpacing: 3 }}>CŒUR D’INCUBATION</Text>
-        <PixelPet appearance={pet.appearance} sleeping={pet.sleeping} />
-        <View style={{ width: 160, height: 8, backgroundColor: '#315360', borderRadius: 4 }} />
-      </View>
+      <IncubatorScene appearance={pet.appearance} sleeping={pet.sleeping} />
       <View style={{ gap: 14, padding: 18, borderRadius: 20, backgroundColor: colors.panel }}>
         {NEEDS.map(key => <View key={key} style={{ gap: 6 }} accessible
           accessibilityLabel={`${indicators[key].label} : ${Math.round(pet.needs[key])} sur 100${pet.needs[key] < 25 ? ', faible' : ''}`}>

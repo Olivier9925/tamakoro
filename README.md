@@ -40,8 +40,12 @@ et calcul du temps écoulé au retour. Les erreurs de lecture préservent la sau
 les erreurs d’écriture proposent une nouvelle tentative. Le MVP reste hors ligne,
 sans compte ni backend. Les notifications et les évolutions artistiques restent à faire.
 
-Les visuels sont provisoires. L’habitat reprend la direction d’un incubateur au sein
-du smartphone ; les ressources finales et animations restent à intégrer.
+Le décor de l’incubateur est généré en SVG par `src/components/incubator-art.ts`
+et affiché avec `expo-image`, déjà installé. Caméra, batterie, puces, nappes cuivrées
+et chambre lumineuse reprennent les références de `../sources/`. La lumière devient
+bleue pendant le sommeil. Le décor fonctionne hors ligne, sans nouvelle dépendance,
+et s’adapte à la largeur disponible. Le sprite de la créature reste provisoire ;
+les ressources finales et animations restent à intégrer.
 
 ### Règles de départ à ajuster
 
