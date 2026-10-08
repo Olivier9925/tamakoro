@@ -65,6 +65,11 @@ jauges fluorescentes et les cinq touches de soin sont regroupées sur deux rang�
 compactes. Les touches ont une base en relief et s’enfoncent à l’appui. Le défilement
 reste disponible pour les grands textes d’accessibilité et les messages d’erreur.
 
+L’en-tête reprend une plaque électronique avec un titre pixel art dessiné en SVG.
+Le nom de la créature utilise la police monospace du système (Menlo sur iOS),
+avec un préfixe de terminal. Le fond bleu nuit est généré en SVG : grille légère,
+points et quelques pistes périphériques, sans animation ni ressource distante.
+
 ### Règles de départ à ajuster
 
 Toutes les jauges vont de 0 à 100 ; une valeur haute signifie que le besoin est satisfait

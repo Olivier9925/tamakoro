@@ -6,6 +6,8 @@ import { APPEARANCES } from '@/components/pixel-pet';
 import { IncubatorScene } from '@/components/incubator-scene';
 import { CareKey } from '@/components/care-key';
 import { NeedGauges } from '@/components/need-gauges';
+import { TERMINAL_FONT } from '@/components/digital-art';
+import { DigitalBackground } from '@/components/digital-background';
 import { HOUR, petMood, type Action, type Appearance } from '@/game/pet';
 import { usePet } from '@/hooks/use-pet';
 
@@ -32,7 +34,9 @@ export default function HomeScreen() {
   const { height } = useWindowDimensions();
   const [viewportHeight, setViewportHeight] = useState(0);
   const sceneHeight = Math.max(180, Math.min(350, (viewportHeight || height - 100) - 340 - insets.bottom));
-  return <ScrollView onLayout={event => setViewportHeight(event.nativeEvent.layout.height)} contentInsetAdjustmentBehavior="automatic" keyboardShouldPersistTaps="handled"
+  return <View style={{ flex: 1, backgroundColor: '#090f18' }}>
+    <DigitalBackground />
+    <ScrollView onLayout={event => setViewportHeight(event.nativeEvent.layout.height)} contentInsetAdjustmentBehavior="automatic" keyboardShouldPersistTaps="handled"
     contentContainerStyle={{ flexGrow: 1, padding: pet ? 14 : 20, paddingBottom: Math.max(insets.bottom, 12),
       gap: pet ? 10 : 16, width: '100%', maxWidth: 560, alignSelf: 'center' }}>
     {game.loading ? <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 16 }}>
@@ -50,7 +54,7 @@ export default function HomeScreen() {
         <TextInput value={name} onChangeText={setName} maxLength={20} editable={!game.busy}
           accessibilityLabel="Nom du Tamakoro" placeholder="Son petit nom" placeholderTextColor={colors.muted}
           returnKeyType="done" style={{ color: colors.text, backgroundColor: colors.panel, borderRadius: 14,
-            padding: 16, fontSize: 18, borderWidth: 1, borderColor: '#365663' }} />
+            padding: 16, fontSize: 18, fontFamily: TERMINAL_FONT, borderWidth: 1, borderColor: '#365663' }} />
         <Text style={{ color: colors.text, fontSize: 16, fontWeight: '600' }}>Choisis sa couleur</Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
           {(Object.keys(APPEARANCES) as Appearance[]).map(value => <Control key={value}
@@ -61,12 +65,24 @@ export default function HomeScreen() {
           disabled={game.busy || !name.trim()} onPress={() => { void game.adopt(name, appearance); }} />
       </>}
     </> : <>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
-        <View style={{ gap: 4 }}>
-          <Text style={{ color: colors.text, fontSize: 24, fontWeight: '700' }}>{pet.name}</Text>
-          <Text style={{ color: colors.muted, fontSize: 11 }}>Jour {Math.max(1, Math.floor((pet.updatedAt - pet.createdAt) / (24 * HOUR)) + 1)} · {APPEARANCES[pet.appearance].label}</Text>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8,
+        padding: 10, backgroundColor: '#101c26', borderRadius: 12, borderWidth: 1, borderColor: '#354650',
+        borderTopColor: '#5a6974', boxShadow: 'inset 0 1px 0 #82939d22, 0 3px 0 #03080d' }}>
+        <View style={{ gap: 4, flex: 1, minWidth: 120 }}>
+          <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+            <Text accessible={false} style={{ color: '#97ed72', fontFamily: TERMINAL_FONT, fontSize: 18 }}>&gt;_</Text>
+            <Text selectable style={{ flexShrink: 1, color: '#d7ffe4', fontFamily: TERMINAL_FONT,
+              fontSize: 22, fontWeight: '700', letterSpacing: 1 }}>{pet.name}</Text>
+          </View>
+          <Text style={{ color: colors.muted, fontFamily: TERMINAL_FONT, fontSize: 10 }}>Jour {Math.max(1, Math.floor((pet.updatedAt - pet.createdAt) / (24 * HOUR)) + 1)} · {APPEARANCES[pet.appearance].label}</Text>
         </View>
-        <Text style={{ color: colors.accent, padding: 10, backgroundColor: colors.panel, borderRadius: 12 }}>{petMood(pet)}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, padding: 8,
+          backgroundColor: '#09151b', borderRadius: 6, borderWidth: 1, borderColor: '#2d474b' }}>
+          <View accessible={false} style={{ width: 5, height: 5, borderRadius: 1,
+            backgroundColor: pet.sleeping ? '#81c8fa' : colors.accent }} />
+          <Text style={{ color: pet.sleeping ? '#81c8fa' : colors.accent, fontFamily: TERMINAL_FONT,
+            fontSize: 11 }}>{petMood(pet)}</Text>
+        </View>
       </View>
       <IncubatorScene appearance={pet.appearance} sleeping={pet.sleeping} height={sceneHeight} />
       <NeedGauges pet={pet} />
@@ -85,5 +101,5 @@ export default function HomeScreen() {
       </View> : <Text style={{ color: colors.muted, fontSize: 12, textAlign: 'center' }}>{game.busy ? 'Sauvegarde…' : 'Partie locale · Soins sauvegardés automatiquement'}</Text>}
 
     </>}
-  </ScrollView>;
+  </ScrollView></View>;
 }
