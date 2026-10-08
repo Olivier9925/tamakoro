@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
 import { advancePet, careForPet, createPet, isPetDead, petGrowth, petHealthAlert, type Action, type Appearance, type Pet } from '@/game/pet';
 import { loadPet, savePet } from '@/game/storage';
+import { reminders } from '@/reminders/reminders';
 
 function growthNotice(previous: Pet, next: Pet) {
   if (isPetDead(next)) return isPetDead(previous) ? null : petHealthAlert(next);
@@ -21,6 +22,11 @@ export function usePet() {
   const [message, setMessage] = useState('Chaque petit soin compte.');
   const [saveFailed, setSaveFailed] = useState(false);
   const queue = useRef<Promise<void>>(Promise.resolve());
+  const petName = pet?.name;
+  const petDead = pet ? isPetDead(pet) : false;
+  useEffect(() => {
+    if (!loading && !loadFailed) void reminders.setPet(petName ? { name: petName, alive: !petDead } : null);
+  }, [petName, petDead, loading, loadFailed]);
 
   const persist = useCallback((value: Pet) => {
     // Serialize writes so an older snapshot cannot overwrite a newer action.

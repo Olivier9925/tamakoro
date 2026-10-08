@@ -38,7 +38,7 @@ La première tranche jouable couvre US-001 à US-005 : adoption avec nom et coul
 cinq besoins, nourrir, hydrater, jouer, nettoyer, dormir/réveiller, sauvegarde locale
 et calcul du temps écoulé au retour. Les erreurs de lecture préservent la sauvegarde ;
 les erreurs d’écriture proposent une nouvelle tentative. Le MVP reste hors ligne,
-sans compte ni backend. Les notifications et les évolutions artistiques restent à faire.
+sans compte ni backend. Les ressources artistiques finales restent à intégrer.
 
 Le décor de l’incubateur est généré en SVG par `src/components/incubator-art.ts`
 et affiché avec `expo-image`, déjà installé. Caméra, batterie, puces, nappes cuivrées
@@ -89,6 +89,38 @@ des soins, le réveil manuel, les formes tous les 15 jours jusqu’à 90 jours,
 les absences et le décès à santé zéro. La route modale `/help` conserve l’écran
 de jeu en place ; « × » ferme l’aide, ou revient à l’accueil si elle a été ouverte
 directement. Le guide défile sur les petits écrans et avec des textes agrandis.
+
+L’encart « Rappels » du guide propose un rappel quotidien local, désactivé par
+défaut, à 19 h (horaire configurable avec le sélecteur natif). L’autorisation
+du téléphone est demandée uniquement lorsque le joueur active l’option. Un refus
+laisse le rappel désactivé et donne accès aux réglages du téléphone. Une révocation
+ultérieure suspend le rappel ; l’autorisation est revérifiée au retour dans l’app,
+sans nouvelle demande automatique. Le bouton de test programme un rappel à 5 secondes.
+Un appui sur une notification Tamakoro ouvre la partie.
+
+`expo-notifications` programme le rappel sur iOS et Android, sans compte, jeton
+push, serveur ni tâche de jeu en arrière-plan. Les préférences sont validées et
+stockées séparément sous `tamakoro.reminders.v1`. Les opérations sont sérialisées ;
+l’identifiant quotidien fixe évite les doublons. Changer l’horaire remplace le rappel,
+et désactiver l’option annule aussi le test en attente. Les échecs de sauvegarde
+restaurent autant que possible l’ancien horaire et affichent une erreur.
+Une sauvegarde de réglages illisible est préservée et bloque toute réécriture.
+
+Le rappel est suspendu sans compagnon vivant et dès qu’un décès est constaté par
+l’app ; une nouvelle adoption le reprend si l’option était activée. Pendant une
+absence, le système affiche le message déjà programmé : il ne recalcule pas les
+jauges ni le décès. Le rappel quotidien n’est donc pas une alerte de santé.
+L’horaire suit l’heure locale du téléphone ; modes silencieux, concentration et
+économie d’énergie peuvent affecter l’affichage ou le délai. Android utilise une
+alarme approximative si l’autorisation système des alarmes exactes n’est pas accordée ;
+le projet ne demande pas cette autorisation supplémentaire. Sur le web, l’encart
+indique que les rappels nécessitent l’app mobile et ses contrôles sont désactivés.
+
+Après l’ajout d’`expo-notifications`, recompiler tout development build existant
+avec `npm run ios` ou `npm run android` pour intégrer le module natif. Les rappels
+locaux peuvent aussi être testés dans Expo Go compatible avec le SDK 57.
+Si le module natif manque dans le client installé, l’app reste jouable et l’encart
+indique la recompilation nécessaire, sans importer le module manquant.
 
 ### Règles de départ à ajuster
 

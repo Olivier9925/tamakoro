@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DigitalBackground } from '@/components/digital-background';
 import { TERMINAL_FONT } from '@/components/digital-art';
 import { TerminalPanel } from '@/components/terminal-panel';
+import { ReminderSettings } from '@/components/reminder-settings';
 
 function GuideSection({ title, children }: PropsWithChildren<{ title: string }>) {
   return <TerminalPanel style={{ gap: 8, padding: 14 }}>
@@ -27,6 +28,7 @@ export function HelpGuide() {
       width: '100%', maxWidth: 560, alignSelf: 'center' }}>
       <Text accessibilityRole="header" style={{ color: '#eaf6f0', fontFamily: TERMINAL_FONT,
         fontSize: 22, fontWeight: '700' }}>Guide du compagnon</Text>
+      <ReminderSettings />
       <GuideSection title="Les soins">
         <GuideText>{'Nourrir : +25 satiété, +3 humeur.\nHydrater : +8 satiété, +5 santé.\nNettoyer : +35 hygiène, +5 humeur.\nJouer : +25 humeur, −8 énergie, −4 satiété.'}</GuideText>
         <GuideText>Les jauges vont de 0 à 100. Orange : besoin faible. Rouge : besoin critique.</GuideText>
