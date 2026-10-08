@@ -53,6 +53,36 @@ Android nécessite son identifiant d’application `android.package` avant son p
 Les identifiants de projet et de signature se configurent avec le compte propriétaire ;
 aucune valeur ni aucun secret ne sont inventés dans le dépôt.
 
+Si le build GitHub échoue avec « Credentials are not set up », initialiser la
+signature depuis un terminal interactif, dans ce dossier :
+
+```sh
+npm run credentials:ios
+```
+
+Cette commande configure les credentials iOS du profil `production`, sans lancer
+de build ni de soumission. Se connecter à Apple Developer lorsqu’EAS le propose
+(mot de passe et validation à deux facteurs à saisir directement dans le terminal),
+sélectionner l’équipe `F8JXH55Q48`, réutiliser un certificat de distribution valide
+si disponible et laisser EAS créer le profil App Store pour
+`com.olivier9925.tamakoro`. Les éléments de signature sont conservés sur EAS.
+Le message « Distribution Certificate is not validated for non-interactive builds »
+ne prouve pas à lui seul que le certificat est invalide : le blocage est l’absence
+d’un ensemble de credentials prêt à l’emploi.
+
+Lancer ensuite un premier build EAS depuis ce terminal avec
+`npm run build:prod -- --platform ios`, puis utiliser les builds GitHub.
+Il s’agit d’un build cloud initié depuis la machine, distinct du build Xcode local
+`npm run ios`. Le profil `production` cible App Store/TestFlight ; le profil
+`simulator` ne remplace pas sa configuration de signature.
+
+`ios.infoPlist.ITSAppUsesNonExemptEncryption` vaut `false` pour le MVP actuel,
+qui n’implémente pas de chiffrement non exempt. Ce champ supprime la question
+manuelle de conformité au chiffrement lors du traitement TestFlight.
+Réévaluer cette déclaration si une fonctionnalité de chiffrement est ajoutée.
+L’absence de variables d’environnement EAS est normale pour ce MVP hors ligne,
+et l’avertissement Node.js `punycode` n’est pas la cause de l’échec de signature.
+
 La section `submit.production.ios` d’`eas.json` configure uniquement l’envoi vers
 App Store Connect/TestFlight. `appleId`, `appleTeamId` et `ascAppId` ne remplacent
 pas `extra.eas.projectId`. Lors de la configuration de la soumission, utiliser
@@ -95,6 +125,9 @@ et calcul du temps écoulé au retour. Les erreurs de lecture préservent la sau
 les erreurs d’écriture proposent une nouvelle tentative. Le MVP reste hors ligne,
 sans compte ni backend. Les ressources artistiques finales restent à intégrer.
 
+Sur iOS, l’écran d’adoption ajuste automatiquement le défilement à l’ouverture
+du clavier pour garder le nom saisi visible. Faire défiler ferme le clavier.
+
 Le décor de l’incubateur est généré en SVG par `src/components/incubator-art.ts`
 et affiché avec `expo-image`, déjà installé. Caméra, batterie, puces, nappes cuivrées
 et chambre lumineuse reprennent les références de `../sources/`. La lumière devient
@@ -122,14 +155,24 @@ regard à gauche, regard à droite et clignement. Reanimated alterne ces sprites
 sans interpolation, sur un cycle de huit secondes. Pendant le sommeil, seuls deux
 sprites aux yeux fermés alternent doucement sur quatre secondes. L’animation se
 met en pause en arrière-plan et reste fixe si la réduction des animations est activée.
-Les sept silhouettes partagent un canevas de 32 × 32 pixels, avec une taille,
-des nageoires et une couronne qui se développent. Chaque stade et chaque palette
+Les sept silhouettes sont dessinées en SVG sur un canevas de 160 × 160 unités :
+contours courbes, ombres douces, iris avec reflets, joues et feuilles nervurées.
+La taille, les feuilles latérales et la couronne se développent avec l’âge ; un
+collier apparaît à l’adolescence et un bourgeon distingue les formes matures.
+Les pieds gardent un ancrage commun pendant la respiration. L’affichage s’adapte
+sans arrondi à la place disponible dans l’incubateur. Chaque stade et chaque palette
 ont leurs propres sprites animés, générés et mis en cache au premier affichage.
+
+`SHARP_MODULE=/chemin/vers/sharp node scripts/preview-pet-sprites.cjs` crée un
+aperçu HTML autonome dans `docs/pet-sprites/` et rasterise les 147 poses pour
+vérifier la transparence, l’absence de rognage et l’ancrage des pieds.
 
 L’écran de soins adapte la hauteur de l’incubateur à l’espace disponible. Les cinq
 jauges fluorescentes et les cinq touches de soin sont regroupées sur deux rangées
 compactes. Les touches ont une base en relief et s’enfoncent à l’appui. Le défilement
 reste disponible pour les grands textes d’accessibilité et les messages d’erreur.
+Le défilement est limité au contenu qui dépasse l’écran, sans rebond ni effet
+de dépassement lorsque tout tient dans la hauteur disponible.
 
 L’en-tête reprend une plaque électronique avec un titre pixel art dessiné en SVG.
 Le nom de la créature utilise la police monospace du système (Menlo sur iOS),

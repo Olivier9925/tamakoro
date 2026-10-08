@@ -1,0 +1,1770 @@
+{
+  "count": 147,
+  "checked": "PNG rasterisation, transparency, uncropped silhouette and shared foot baseline",
+  "sprites": [
+    {
+      "appearance": "leaf",
+      "stage": 0,
+      "state": "awake",
+      "frame": 0,
+      "bounds": {
+        "left": 39,
+        "top": 77,
+        "right": 120,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 0,
+      "state": "awake",
+      "frame": 1,
+      "bounds": {
+        "left": 38,
+        "top": 75,
+        "right": 121,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 0,
+      "state": "awake",
+      "frame": 2,
+      "bounds": {
+        "left": 38,
+        "top": 77,
+        "right": 121,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 0,
+      "state": "awake",
+      "frame": 3,
+      "bounds": {
+        "left": 39,
+        "top": 78,
+        "right": 120,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 0,
+      "state": "awake",
+      "frame": 4,
+      "bounds": {
+        "left": 39,
+        "top": 77,
+        "right": 120,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 0,
+      "state": "asleep",
+      "frame": 0,
+      "bounds": {
+        "left": 39,
+        "top": 77,
+        "right": 120,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 0,
+      "state": "asleep",
+      "frame": 1,
+      "bounds": {
+        "left": 38,
+        "top": 75,
+        "right": 121,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 1,
+      "state": "awake",
+      "frame": 0,
+      "bounds": {
+        "left": 32,
+        "top": 67,
+        "right": 127,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 1,
+      "state": "awake",
+      "frame": 1,
+      "bounds": {
+        "left": 31,
+        "top": 64,
+        "right": 128,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 1,
+      "state": "awake",
+      "frame": 2,
+      "bounds": {
+        "left": 31,
+        "top": 66,
+        "right": 128,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 1,
+      "state": "awake",
+      "frame": 3,
+      "bounds": {
+        "left": 33,
+        "top": 67,
+        "right": 126,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 1,
+      "state": "awake",
+      "frame": 4,
+      "bounds": {
+        "left": 32,
+        "top": 67,
+        "right": 127,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 1,
+      "state": "asleep",
+      "frame": 0,
+      "bounds": {
+        "left": 32,
+        "top": 67,
+        "right": 127,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 1,
+      "state": "asleep",
+      "frame": 1,
+      "bounds": {
+        "left": 31,
+        "top": 64,
+        "right": 128,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 2,
+      "state": "awake",
+      "frame": 0,
+      "bounds": {
+        "left": 24,
+        "top": 58,
+        "right": 135,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 2,
+      "state": "awake",
+      "frame": 1,
+      "bounds": {
+        "left": 23,
+        "top": 55,
+        "right": 136,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 2,
+      "state": "awake",
+      "frame": 2,
+      "bounds": {
+        "left": 24,
+        "top": 57,
+        "right": 135,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 2,
+      "state": "awake",
+      "frame": 3,
+      "bounds": {
+        "left": 25,
+        "top": 59,
+        "right": 134,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 2,
+      "state": "awake",
+      "frame": 4,
+      "bounds": {
+        "left": 24,
+        "top": 58,
+        "right": 135,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 2,
+      "state": "asleep",
+      "frame": 0,
+      "bounds": {
+        "left": 24,
+        "top": 58,
+        "right": 135,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 2,
+      "state": "asleep",
+      "frame": 1,
+      "bounds": {
+        "left": 23,
+        "top": 55,
+        "right": 136,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 3,
+      "state": "awake",
+      "frame": 0,
+      "bounds": {
+        "left": 19,
+        "top": 48,
+        "right": 140,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 3,
+      "state": "awake",
+      "frame": 1,
+      "bounds": {
+        "left": 18,
+        "top": 45,
+        "right": 141,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 3,
+      "state": "awake",
+      "frame": 2,
+      "bounds": {
+        "left": 18,
+        "top": 47,
+        "right": 141,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 3,
+      "state": "awake",
+      "frame": 3,
+      "bounds": {
+        "left": 20,
+        "top": 49,
+        "right": 139,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 3,
+      "state": "awake",
+      "frame": 4,
+      "bounds": {
+        "left": 19,
+        "top": 48,
+        "right": 140,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 3,
+      "state": "asleep",
+      "frame": 0,
+      "bounds": {
+        "left": 19,
+        "top": 48,
+        "right": 140,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 3,
+      "state": "asleep",
+      "frame": 1,
+      "bounds": {
+        "left": 18,
+        "top": 45,
+        "right": 141,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 4,
+      "state": "awake",
+      "frame": 0,
+      "bounds": {
+        "left": 14,
+        "top": 41,
+        "right": 145,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 4,
+      "state": "awake",
+      "frame": 1,
+      "bounds": {
+        "left": 13,
+        "top": 37,
+        "right": 146,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 4,
+      "state": "awake",
+      "frame": 2,
+      "bounds": {
+        "left": 13,
+        "top": 40,
+        "right": 146,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 4,
+      "state": "awake",
+      "frame": 3,
+      "bounds": {
+        "left": 15,
+        "top": 42,
+        "right": 144,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 4,
+      "state": "awake",
+      "frame": 4,
+      "bounds": {
+        "left": 14,
+        "top": 41,
+        "right": 145,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 4,
+      "state": "asleep",
+      "frame": 0,
+      "bounds": {
+        "left": 14,
+        "top": 41,
+        "right": 145,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 4,
+      "state": "asleep",
+      "frame": 1,
+      "bounds": {
+        "left": 13,
+        "top": 37,
+        "right": 146,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 5,
+      "state": "awake",
+      "frame": 0,
+      "bounds": {
+        "left": 10,
+        "top": 24,
+        "right": 149,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 5,
+      "state": "awake",
+      "frame": 1,
+      "bounds": {
+        "left": 9,
+        "top": 20,
+        "right": 150,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 5,
+      "state": "awake",
+      "frame": 2,
+      "bounds": {
+        "left": 9,
+        "top": 24,
+        "right": 150,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 5,
+      "state": "awake",
+      "frame": 3,
+      "bounds": {
+        "left": 11,
+        "top": 24,
+        "right": 148,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 5,
+      "state": "awake",
+      "frame": 4,
+      "bounds": {
+        "left": 10,
+        "top": 24,
+        "right": 149,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 5,
+      "state": "asleep",
+      "frame": 0,
+      "bounds": {
+        "left": 10,
+        "top": 24,
+        "right": 149,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 5,
+      "state": "asleep",
+      "frame": 1,
+      "bounds": {
+        "left": 9,
+        "top": 20,
+        "right": 150,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 6,
+      "state": "awake",
+      "frame": 0,
+      "bounds": {
+        "left": 6,
+        "top": 17,
+        "right": 153,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 6,
+      "state": "awake",
+      "frame": 1,
+      "bounds": {
+        "left": 5,
+        "top": 13,
+        "right": 154,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 6,
+      "state": "awake",
+      "frame": 2,
+      "bounds": {
+        "left": 5,
+        "top": 17,
+        "right": 154,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 6,
+      "state": "awake",
+      "frame": 3,
+      "bounds": {
+        "left": 8,
+        "top": 17,
+        "right": 151,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 6,
+      "state": "awake",
+      "frame": 4,
+      "bounds": {
+        "left": 6,
+        "top": 17,
+        "right": 153,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 6,
+      "state": "asleep",
+      "frame": 0,
+      "bounds": {
+        "left": 6,
+        "top": 17,
+        "right": 153,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "leaf",
+      "stage": 6,
+      "state": "asleep",
+      "frame": 1,
+      "bounds": {
+        "left": 5,
+        "top": 13,
+        "right": 154,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 0,
+      "state": "awake",
+      "frame": 0,
+      "bounds": {
+        "left": 39,
+        "top": 77,
+        "right": 120,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 0,
+      "state": "awake",
+      "frame": 1,
+      "bounds": {
+        "left": 38,
+        "top": 75,
+        "right": 121,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 0,
+      "state": "awake",
+      "frame": 2,
+      "bounds": {
+        "left": 38,
+        "top": 77,
+        "right": 121,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 0,
+      "state": "awake",
+      "frame": 3,
+      "bounds": {
+        "left": 39,
+        "top": 78,
+        "right": 120,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 0,
+      "state": "awake",
+      "frame": 4,
+      "bounds": {
+        "left": 39,
+        "top": 77,
+        "right": 120,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 0,
+      "state": "asleep",
+      "frame": 0,
+      "bounds": {
+        "left": 39,
+        "top": 77,
+        "right": 120,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 0,
+      "state": "asleep",
+      "frame": 1,
+      "bounds": {
+        "left": 38,
+        "top": 75,
+        "right": 121,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 1,
+      "state": "awake",
+      "frame": 0,
+      "bounds": {
+        "left": 32,
+        "top": 67,
+        "right": 127,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 1,
+      "state": "awake",
+      "frame": 1,
+      "bounds": {
+        "left": 31,
+        "top": 64,
+        "right": 128,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 1,
+      "state": "awake",
+      "frame": 2,
+      "bounds": {
+        "left": 31,
+        "top": 66,
+        "right": 128,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 1,
+      "state": "awake",
+      "frame": 3,
+      "bounds": {
+        "left": 33,
+        "top": 67,
+        "right": 126,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 1,
+      "state": "awake",
+      "frame": 4,
+      "bounds": {
+        "left": 32,
+        "top": 67,
+        "right": 127,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 1,
+      "state": "asleep",
+      "frame": 0,
+      "bounds": {
+        "left": 32,
+        "top": 67,
+        "right": 127,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 1,
+      "state": "asleep",
+      "frame": 1,
+      "bounds": {
+        "left": 31,
+        "top": 64,
+        "right": 128,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 2,
+      "state": "awake",
+      "frame": 0,
+      "bounds": {
+        "left": 24,
+        "top": 58,
+        "right": 135,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 2,
+      "state": "awake",
+      "frame": 1,
+      "bounds": {
+        "left": 23,
+        "top": 55,
+        "right": 136,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 2,
+      "state": "awake",
+      "frame": 2,
+      "bounds": {
+        "left": 24,
+        "top": 57,
+        "right": 135,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 2,
+      "state": "awake",
+      "frame": 3,
+      "bounds": {
+        "left": 25,
+        "top": 59,
+        "right": 134,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 2,
+      "state": "awake",
+      "frame": 4,
+      "bounds": {
+        "left": 24,
+        "top": 58,
+        "right": 135,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 2,
+      "state": "asleep",
+      "frame": 0,
+      "bounds": {
+        "left": 24,
+        "top": 58,
+        "right": 135,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 2,
+      "state": "asleep",
+      "frame": 1,
+      "bounds": {
+        "left": 23,
+        "top": 55,
+        "right": 136,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 3,
+      "state": "awake",
+      "frame": 0,
+      "bounds": {
+        "left": 19,
+        "top": 48,
+        "right": 140,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 3,
+      "state": "awake",
+      "frame": 1,
+      "bounds": {
+        "left": 18,
+        "top": 45,
+        "right": 141,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 3,
+      "state": "awake",
+      "frame": 2,
+      "bounds": {
+        "left": 18,
+        "top": 47,
+        "right": 141,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 3,
+      "state": "awake",
+      "frame": 3,
+      "bounds": {
+        "left": 20,
+        "top": 49,
+        "right": 139,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 3,
+      "state": "awake",
+      "frame": 4,
+      "bounds": {
+        "left": 19,
+        "top": 48,
+        "right": 140,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 3,
+      "state": "asleep",
+      "frame": 0,
+      "bounds": {
+        "left": 19,
+        "top": 48,
+        "right": 140,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 3,
+      "state": "asleep",
+      "frame": 1,
+      "bounds": {
+        "left": 18,
+        "top": 45,
+        "right": 141,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 4,
+      "state": "awake",
+      "frame": 0,
+      "bounds": {
+        "left": 14,
+        "top": 41,
+        "right": 145,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 4,
+      "state": "awake",
+      "frame": 1,
+      "bounds": {
+        "left": 13,
+        "top": 37,
+        "right": 146,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 4,
+      "state": "awake",
+      "frame": 2,
+      "bounds": {
+        "left": 13,
+        "top": 40,
+        "right": 146,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 4,
+      "state": "awake",
+      "frame": 3,
+      "bounds": {
+        "left": 15,
+        "top": 42,
+        "right": 144,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 4,
+      "state": "awake",
+      "frame": 4,
+      "bounds": {
+        "left": 14,
+        "top": 41,
+        "right": 145,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 4,
+      "state": "asleep",
+      "frame": 0,
+      "bounds": {
+        "left": 14,
+        "top": 41,
+        "right": 145,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 4,
+      "state": "asleep",
+      "frame": 1,
+      "bounds": {
+        "left": 13,
+        "top": 37,
+        "right": 146,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 5,
+      "state": "awake",
+      "frame": 0,
+      "bounds": {
+        "left": 10,
+        "top": 24,
+        "right": 149,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 5,
+      "state": "awake",
+      "frame": 1,
+      "bounds": {
+        "left": 9,
+        "top": 20,
+        "right": 150,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 5,
+      "state": "awake",
+      "frame": 2,
+      "bounds": {
+        "left": 9,
+        "top": 24,
+        "right": 150,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 5,
+      "state": "awake",
+      "frame": 3,
+      "bounds": {
+        "left": 11,
+        "top": 24,
+        "right": 148,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 5,
+      "state": "awake",
+      "frame": 4,
+      "bounds": {
+        "left": 10,
+        "top": 24,
+        "right": 149,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 5,
+      "state": "asleep",
+      "frame": 0,
+      "bounds": {
+        "left": 10,
+        "top": 24,
+        "right": 149,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 5,
+      "state": "asleep",
+      "frame": 1,
+      "bounds": {
+        "left": 9,
+        "top": 20,
+        "right": 150,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 6,
+      "state": "awake",
+      "frame": 0,
+      "bounds": {
+        "left": 6,
+        "top": 17,
+        "right": 153,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 6,
+      "state": "awake",
+      "frame": 1,
+      "bounds": {
+        "left": 5,
+        "top": 13,
+        "right": 154,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 6,
+      "state": "awake",
+      "frame": 2,
+      "bounds": {
+        "left": 5,
+        "top": 17,
+        "right": 154,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 6,
+      "state": "awake",
+      "frame": 3,
+      "bounds": {
+        "left": 8,
+        "top": 17,
+        "right": 151,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 6,
+      "state": "awake",
+      "frame": 4,
+      "bounds": {
+        "left": 6,
+        "top": 17,
+        "right": 153,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 6,
+      "state": "asleep",
+      "frame": 0,
+      "bounds": {
+        "left": 6,
+        "top": 17,
+        "right": 153,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "ember",
+      "stage": 6,
+      "state": "asleep",
+      "frame": 1,
+      "bounds": {
+        "left": 5,
+        "top": 13,
+        "right": 154,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 0,
+      "state": "awake",
+      "frame": 0,
+      "bounds": {
+        "left": 39,
+        "top": 77,
+        "right": 120,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 0,
+      "state": "awake",
+      "frame": 1,
+      "bounds": {
+        "left": 38,
+        "top": 75,
+        "right": 121,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 0,
+      "state": "awake",
+      "frame": 2,
+      "bounds": {
+        "left": 38,
+        "top": 77,
+        "right": 121,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 0,
+      "state": "awake",
+      "frame": 3,
+      "bounds": {
+        "left": 39,
+        "top": 78,
+        "right": 120,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 0,
+      "state": "awake",
+      "frame": 4,
+      "bounds": {
+        "left": 39,
+        "top": 77,
+        "right": 120,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 0,
+      "state": "asleep",
+      "frame": 0,
+      "bounds": {
+        "left": 39,
+        "top": 77,
+        "right": 120,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 0,
+      "state": "asleep",
+      "frame": 1,
+      "bounds": {
+        "left": 38,
+        "top": 75,
+        "right": 121,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 1,
+      "state": "awake",
+      "frame": 0,
+      "bounds": {
+        "left": 32,
+        "top": 67,
+        "right": 127,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 1,
+      "state": "awake",
+      "frame": 1,
+      "bounds": {
+        "left": 31,
+        "top": 64,
+        "right": 128,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 1,
+      "state": "awake",
+      "frame": 2,
+      "bounds": {
+        "left": 31,
+        "top": 66,
+        "right": 128,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 1,
+      "state": "awake",
+      "frame": 3,
+      "bounds": {
+        "left": 33,
+        "top": 67,
+        "right": 126,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 1,
+      "state": "awake",
+      "frame": 4,
+      "bounds": {
+        "left": 32,
+        "top": 67,
+        "right": 127,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 1,
+      "state": "asleep",
+      "frame": 0,
+      "bounds": {
+        "left": 32,
+        "top": 67,
+        "right": 127,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 1,
+      "state": "asleep",
+      "frame": 1,
+      "bounds": {
+        "left": 31,
+        "top": 64,
+        "right": 128,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 2,
+      "state": "awake",
+      "frame": 0,
+      "bounds": {
+        "left": 24,
+        "top": 58,
+        "right": 135,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 2,
+      "state": "awake",
+      "frame": 1,
+      "bounds": {
+        "left": 23,
+        "top": 55,
+        "right": 136,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 2,
+      "state": "awake",
+      "frame": 2,
+      "bounds": {
+        "left": 24,
+        "top": 57,
+        "right": 135,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 2,
+      "state": "awake",
+      "frame": 3,
+      "bounds": {
+        "left": 25,
+        "top": 59,
+        "right": 134,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 2,
+      "state": "awake",
+      "frame": 4,
+      "bounds": {
+        "left": 24,
+        "top": 58,
+        "right": 135,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 2,
+      "state": "asleep",
+      "frame": 0,
+      "bounds": {
+        "left": 24,
+        "top": 58,
+        "right": 135,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 2,
+      "state": "asleep",
+      "frame": 1,
+      "bounds": {
+        "left": 23,
+        "top": 55,
+        "right": 136,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 3,
+      "state": "awake",
+      "frame": 0,
+      "bounds": {
+        "left": 19,
+        "top": 48,
+        "right": 140,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 3,
+      "state": "awake",
+      "frame": 1,
+      "bounds": {
+        "left": 18,
+        "top": 45,
+        "right": 141,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 3,
+      "state": "awake",
+      "frame": 2,
+      "bounds": {
+        "left": 18,
+        "top": 47,
+        "right": 141,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 3,
+      "state": "awake",
+      "frame": 3,
+      "bounds": {
+        "left": 20,
+        "top": 49,
+        "right": 139,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 3,
+      "state": "awake",
+      "frame": 4,
+      "bounds": {
+        "left": 19,
+        "top": 48,
+        "right": 140,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 3,
+      "state": "asleep",
+      "frame": 0,
+      "bounds": {
+        "left": 19,
+        "top": 48,
+        "right": 140,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 3,
+      "state": "asleep",
+      "frame": 1,
+      "bounds": {
+        "left": 18,
+        "top": 45,
+        "right": 141,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 4,
+      "state": "awake",
+      "frame": 0,
+      "bounds": {
+        "left": 14,
+        "top": 41,
+        "right": 145,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 4,
+      "state": "awake",
+      "frame": 1,
+      "bounds": {
+        "left": 13,
+        "top": 37,
+        "right": 146,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 4,
+      "state": "awake",
+      "frame": 2,
+      "bounds": {
+        "left": 13,
+        "top": 40,
+        "right": 146,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 4,
+      "state": "awake",
+      "frame": 3,
+      "bounds": {
+        "left": 15,
+        "top": 42,
+        "right": 144,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 4,
+      "state": "awake",
+      "frame": 4,
+      "bounds": {
+        "left": 14,
+        "top": 41,
+        "right": 145,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 4,
+      "state": "asleep",
+      "frame": 0,
+      "bounds": {
+        "left": 14,
+        "top": 41,
+        "right": 145,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 4,
+      "state": "asleep",
+      "frame": 1,
+      "bounds": {
+        "left": 13,
+        "top": 37,
+        "right": 146,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 5,
+      "state": "awake",
+      "frame": 0,
+      "bounds": {
+        "left": 10,
+        "top": 24,
+        "right": 149,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 5,
+      "state": "awake",
+      "frame": 1,
+      "bounds": {
+        "left": 9,
+        "top": 20,
+        "right": 150,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 5,
+      "state": "awake",
+      "frame": 2,
+      "bounds": {
+        "left": 9,
+        "top": 24,
+        "right": 150,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 5,
+      "state": "awake",
+      "frame": 3,
+      "bounds": {
+        "left": 11,
+        "top": 24,
+        "right": 148,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 5,
+      "state": "awake",
+      "frame": 4,
+      "bounds": {
+        "left": 10,
+        "top": 24,
+        "right": 149,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 5,
+      "state": "asleep",
+      "frame": 0,
+      "bounds": {
+        "left": 10,
+        "top": 24,
+        "right": 149,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 5,
+      "state": "asleep",
+      "frame": 1,
+      "bounds": {
+        "left": 9,
+        "top": 20,
+        "right": 150,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 6,
+      "state": "awake",
+      "frame": 0,
+      "bounds": {
+        "left": 6,
+        "top": 17,
+        "right": 153,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 6,
+      "state": "awake",
+      "frame": 1,
+      "bounds": {
+        "left": 5,
+        "top": 13,
+        "right": 154,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 6,
+      "state": "awake",
+      "frame": 2,
+      "bounds": {
+        "left": 5,
+        "top": 17,
+        "right": 154,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 6,
+      "state": "awake",
+      "frame": 3,
+      "bounds": {
+        "left": 8,
+        "top": 17,
+        "right": 151,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 6,
+      "state": "awake",
+      "frame": 4,
+      "bounds": {
+        "left": 6,
+        "top": 17,
+        "right": 153,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 6,
+      "state": "asleep",
+      "frame": 0,
+      "bounds": {
+        "left": 6,
+        "top": 17,
+        "right": 153,
+        "bottom": 155
+      }
+    },
+    {
+      "appearance": "water",
+      "stage": 6,
+      "state": "asleep",
+      "frame": 1,
+      "bounds": {
+        "left": 5,
+        "top": 13,
+        "right": 154,
+        "bottom": 155
+      }
+    }
+  ]
+}

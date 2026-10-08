@@ -54,6 +54,7 @@
     "prebuild:clean": "expo prebuild --clean",
     "typecheck": "tsc --noEmit",
     "lint": "expo lint",
+    "credentials:ios": "npx eas-cli@latest credentials:configure-build --platform ios --profile production",
     "build:dev": "npx eas-cli@latest build --profile development",
     "build:preview": "npx eas-cli@latest build --profile preview",
     "build:prod": "npx eas-cli@latest build --profile production",
