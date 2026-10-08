@@ -5,10 +5,10 @@ import { INCUBATOR_SOURCES } from '@/components/incubator-art';
 import { PixelPet } from '@/components/pixel-pet';
 import type { Appearance } from '@/game/pet';
 
-export function IncubatorScene({ appearance, sleeping = false }: { appearance: Appearance; sleeping?: boolean }) {
+export function IncubatorScene({ appearance, sleeping = false, height }: { appearance: Appearance; sleeping?: boolean; height?: number }) {
   const [width, setWidth] = useState(320);
   return <View onLayout={event => setWidth(event.nativeEvent.layout.width)}
-    style={{ width: '100%', aspectRatio: 360 / 400, overflow: 'hidden', borderRadius: 24, backgroundColor: '#0c1822' }}>
+    style={{ width: '100%', height, aspectRatio: height ? undefined : 360 / 400, overflow: 'hidden', borderRadius: 20, backgroundColor: '#0c1822' }}>
     <View pointerEvents="none" accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
       style={{ position: 'absolute', inset: 0 }}>
       <Image source={sleeping ? INCUBATOR_SOURCES.asleep : INCUBATOR_SOURCES.awake}
@@ -21,7 +21,8 @@ export function IncubatorScene({ appearance, sleeping = false }: { appearance: A
     </View>
     <View style={{ position: 'absolute', top: '36%', bottom: '21%', left: '20%', right: '20%',
       justifyContent: 'flex-end', alignItems: 'center' }}>
-      <PixelPet appearance={appearance} sleeping={sleeping} pixelSize={Math.max(1, Math.floor(width / 32))} />
+      <PixelPet appearance={appearance} sleeping={sleeping}
+        pixelSize={Math.max(1, Math.floor(Math.min(width / 32, (height ?? width * 400 / 360) * 0.43 / 16)))} />
     </View>
   </View>;
 }

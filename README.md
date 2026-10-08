@@ -47,6 +47,11 @@ bleue pendant le sommeil. Le décor fonctionne hors ligne, sans nouvelle dépend
 et s’adapte à la largeur disponible. Le sprite de la créature reste provisoire ;
 les ressources finales et animations restent à intégrer.
 
+L’écran de soins adapte la hauteur de l’incubateur à l’espace disponible. Les cinq
+jauges fluorescentes et les cinq touches de soin sont regroupées sur deux rangées
+compactes. Les touches ont une base en relief et s’enfoncent à l’appui. Le défilement
+reste disponible pour les grands textes d’accessibilité et les messages d’erreur.
+
 ### Règles de départ à ajuster
 
 Toutes les jauges vont de 0 à 100 ; une valeur haute signifie que le besoin est satisfait

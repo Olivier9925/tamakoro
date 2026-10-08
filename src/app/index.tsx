@@ -1,21 +1,20 @@
 import { Button, Host } from '@expo/ui';
 import { useState } from 'react';
-import { ActivityIndicator, ScrollView, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, TextInput, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { APPEARANCES } from '@/components/pixel-pet';
 import { IncubatorScene } from '@/components/incubator-scene';
-import { HOUR, NEEDS, petMood, type Action, type Appearance, type Need } from '@/game/pet';
+import { CareKey } from '@/components/care-key';
+import { NeedGauges } from '@/components/need-gauges';
+import { HOUR, petMood, type Action, type Appearance } from '@/game/pet';
 import { usePet } from '@/hooks/use-pet';
 
 const colors = { panel: '#19343f', text: '#eaf6f0', muted: '#a3bcc0', accent: '#a9d875' };
-const indicators: Record<Need, { label: string; color: string }> = {
-  food: { label: 'Satiété', color: '#ffa986' }, energy: { label: 'Énergie', color: '#ffdb83' },
-  hygiene: { label: 'Hygiène', color: '#8fdce5' }, mood: { label: 'Humeur', color: '#a9d875' },
-  health: { label: 'Santé', color: '#d6b2ec' },
-};
-const actions: { action: Action; label: string }[] = [
-  { action: 'feed', label: 'Nourrir' }, { action: 'hydrate', label: 'Hydrater' },
-  { action: 'play', label: 'Jouer' }, { action: 'clean', label: 'Nettoyer' },
+const actions: { action: Action; label: string; symbol: string; color: string }[] = [
+  { action: 'feed', label: 'Nourrir', symbol: '🍎', color: '#ffac69' },
+  { action: 'hydrate', label: 'Hydrater', symbol: '💧', color: '#59efff' },
+  { action: 'play', label: 'Jouer', symbol: '✦', color: '#a0ff77' },
+  { action: 'clean', label: 'Nettoyer', symbol: '🫧', color: '#81bcff' },
 ];
 function Control({ label, onPress, disabled = false, selected = false }: {
   label: string; onPress: () => void; disabled?: boolean; selected?: boolean;
@@ -30,9 +29,12 @@ export default function HomeScreen() {
   const [appearance, setAppearance] = useState<Appearance>('leaf');
   const insets = useSafeAreaInsets();
   const pet = game.pet;
-  return <ScrollView contentInsetAdjustmentBehavior="automatic" keyboardShouldPersistTaps="handled"
-    contentContainerStyle={{ flexGrow: 1, padding: 20, paddingBottom: Math.max(insets.bottom, 20) + 20,
-      gap: 22, width: '100%', maxWidth: 560, alignSelf: 'center' }}>
+  const { height } = useWindowDimensions();
+  const [viewportHeight, setViewportHeight] = useState(0);
+  const sceneHeight = Math.max(180, Math.min(350, (viewportHeight || height - 100) - 340 - insets.bottom));
+  return <ScrollView onLayout={event => setViewportHeight(event.nativeEvent.layout.height)} contentInsetAdjustmentBehavior="automatic" keyboardShouldPersistTaps="handled"
+    contentContainerStyle={{ flexGrow: 1, padding: pet ? 14 : 20, paddingBottom: Math.max(insets.bottom, 12),
+      gap: pet ? 10 : 16, width: '100%', maxWidth: 560, alignSelf: 'center' }}>
     {game.loading ? <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 16 }}>
       <ActivityIndicator color={colors.accent} /><Text style={{ color: colors.text }}>Ouverture de ton petit monde…</Text>
     </View> : !pet ? <>
@@ -61,39 +63,27 @@ export default function HomeScreen() {
     </> : <>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
         <View style={{ gap: 4 }}>
-          <Text style={{ color: colors.text, fontSize: 30, fontWeight: '700' }}>{pet.name}</Text>
-          <Text style={{ color: colors.muted }}>Jour {Math.max(1, Math.floor((pet.updatedAt - pet.createdAt) / (24 * HOUR)) + 1)} · {APPEARANCES[pet.appearance].label}</Text>
+          <Text style={{ color: colors.text, fontSize: 24, fontWeight: '700' }}>{pet.name}</Text>
+          <Text style={{ color: colors.muted, fontSize: 11 }}>Jour {Math.max(1, Math.floor((pet.updatedAt - pet.createdAt) / (24 * HOUR)) + 1)} · {APPEARANCES[pet.appearance].label}</Text>
         </View>
         <Text style={{ color: colors.accent, padding: 10, backgroundColor: colors.panel, borderRadius: 12 }}>{petMood(pet)}</Text>
       </View>
-      <IncubatorScene appearance={pet.appearance} sleeping={pet.sleeping} />
-      <View style={{ gap: 14, padding: 18, borderRadius: 20, backgroundColor: colors.panel }}>
-        {NEEDS.map(key => <View key={key} style={{ gap: 6 }} accessible
-          accessibilityLabel={`${indicators[key].label} : ${Math.round(pet.needs[key])} sur 100${pet.needs[key] < 25 ? ', faible' : ''}`}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={{ color: colors.text, fontWeight: '600' }}>{indicators[key].label}{pet.needs[key] < 25 ? ' · Faible' : ''}</Text>
-            <Text style={{ color: indicators[key].color, fontVariant: ['tabular-nums'] }}>{Math.round(pet.needs[key])}/100</Text>
-          </View>
-          <View style={{ height: 8, backgroundColor: '#0e2530', borderRadius: 4, overflow: 'hidden' }}>
-            <View style={{ height: '100%', width: `${pet.needs[key]}%`, backgroundColor: indicators[key].color }} />
-          </View>
-        </View>)}
+      <IncubatorScene appearance={pet.appearance} sleeping={pet.sleeping} height={sceneHeight} />
+      <NeedGauges pet={pet} />
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+        {actions.map(({ action, label, symbol, color }) => <CareKey key={action} label={label} symbol={symbol} color={color}
+          disabled={game.busy || pet.sleeping} onPress={() => { void game.care(action); }} />)}
+        <CareKey label={pet.sleeping ? 'Réveiller' : 'Dormir'} symbol={pet.sleeping ? '☀' : '☾'} color="#c6a0ff"
+          disabled={game.busy} onPress={() => { void game.care('sleep'); }} />
       </View>
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}>
-        {actions.map(({ action, label }) => <Control key={action} label={label} disabled={game.busy || pet.sleeping}
-          onPress={() => { void game.care(action); }} />)}
-        <Control label={pet.sleeping ? 'Réveiller' : 'Dormir'} selected disabled={game.busy}
-          onPress={() => { void game.care('sleep'); }} />
-      </View>
-      <Text accessibilityLiveRegion="polite" style={{ color: colors.text, lineHeight: 22, textAlign: 'center' }}>{game.message}</Text>
+      <Text accessibilityLiveRegion="polite" style={{ color: colors.text, fontSize: 11, lineHeight: 16, textAlign: 'center' }}>
+        {game.message.replace(' Les jauges restent entre 0 et 100.', '')}
+      </Text>
       {game.saveFailed ? <View style={{ gap: 10 }}>
         <Text accessibilityRole="alert" selectable style={{ color: '#ffb2a5' }}>Sauvegarde impossible. Tes soins restent en mémoire : réessaie avant de fermer l’application.</Text>
         <Control label="Réessayer la sauvegarde" disabled={game.busy} onPress={() => { void game.retrySave(); }} />
       </View> : <Text style={{ color: colors.muted, fontSize: 12, textAlign: 'center' }}>{game.busy ? 'Sauvegarde…' : 'Partie locale · Soins sauvegardés automatiquement'}</Text>}
-      <Text style={{ color: colors.muted, fontSize: 13, lineHeight: 20 }}>
-        Une jauge haute signifie que tout va bien. Les besoins diminuent doucement pendant ton absence.
-        Ton compagnon peut avoir besoin de soins, mais tu ne le perdras jamais.
-      </Text>
+
     </>}
   </ScrollView>;
 }
