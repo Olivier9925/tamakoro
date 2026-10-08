@@ -95,6 +95,9 @@ et calcul du temps écoulé au retour. Les erreurs de lecture préservent la sau
 les erreurs d’écriture proposent une nouvelle tentative. Le MVP reste hors ligne,
 sans compte ni backend. Les ressources artistiques finales restent à intégrer.
 
+Sur iOS, l’écran d’adoption ajuste automatiquement le défilement à l’ouverture
+du clavier pour garder le nom saisi visible. Faire défiler ferme le clavier.
+
 Le décor de l’incubateur est généré en SVG par `src/components/incubator-art.ts`
 et affiché avec `expo-image`, déjà installé. Caméra, batterie, puces, nappes cuivrées
 et chambre lumineuse reprennent les références de `../sources/`. La lumière devient

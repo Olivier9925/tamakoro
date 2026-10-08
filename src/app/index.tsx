@@ -43,7 +43,8 @@ export default function HomeScreen() {
   const sceneHeight = Math.max(180, Math.min(350, (viewportHeight || height - 100) - 400 - insets.bottom));
   return <View style={{ flex: 1, backgroundColor: '#090f18' }}>
     <DigitalBackground />
-    <ScrollView onLayout={event => setViewportHeight(event.nativeEvent.layout.height)} contentInsetAdjustmentBehavior="automatic" keyboardShouldPersistTaps="handled"
+    <ScrollView onLayout={event => setViewportHeight(event.nativeEvent.layout.height)} contentInsetAdjustmentBehavior="automatic"
+    automaticallyAdjustKeyboardInsets keyboardDismissMode="on-drag" keyboardShouldPersistTaps="handled"
     contentContainerStyle={{ flexGrow: 1, padding: pet ? 14 : 20, paddingBottom: Math.max(insets.bottom, 12),
       gap: pet ? 10 : 16, width: '100%', maxWidth: 560, alignSelf: 'center' }}>
     {game.loading ? <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 16 }}>
