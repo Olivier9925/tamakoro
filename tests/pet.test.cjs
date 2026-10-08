@@ -7,7 +7,7 @@ const { test, after } = require('node:test');
 const output = mkdtempSync(join(tmpdir(), 'tamakoro-tests-'));
 execFileSync(process.execPath, ['node_modules/typescript/bin/tsc', 'src/game/pet.ts', '--outDir', output,
   '--module', 'commonjs', '--target', 'es2020', '--skipLibCheck', '--strict', '--ignoreConfig']);
-const { createPet, advancePet, careForPet, parsePet, HOUR, NEEDS } = require(join(output, 'pet.js'));
+const { createPet, advancePet, careForPet, parsePet, petGrowth, GROWTH_STAGES, DAY, HOUR, NEEDS } = require(join(output, 'pet.js'));
 after(() => rmSync(output, { recursive: true, force: true }));
 const birth = 100000;
 const initial = () => createPet(' Momo ', 'leaf', birth);
@@ -58,4 +58,32 @@ test('corrupt or unsupported saves are rejected', () => {
     { name: '' }, { sleeping: 'yes' }, { needs: { food: 200 } }]) {
     assert.throws(() => parsePet(JSON.stringify({ ...initial(), ...patch })));
   }
+});
+
+test('growth changes exactly at each 15-day boundary and stops at adulthood', () => {
+  assert.equal(petGrowth(initial(), birth).stage.label, 'Bébé');
+  assert.equal(petGrowth(initial(), birth).daysUntilNext, 15);
+  for (let index = 1; index < GROWTH_STAGES.length; index++) {
+    const boundary = birth + index * 15 * DAY;
+    assert.equal(petGrowth(initial(), boundary - 1).stageIndex, index - 1);
+    const growth = petGrowth(initial(), boundary);
+    assert.equal(growth.stageIndex, index);
+    assert.equal(growth.stage.label, GROWTH_STAGES[index].label);
+    assert.equal(growth.daysUntilNext, index === 6 ? null : 15);
+  }
+  const adult = petGrowth(initial(), birth + 365 * DAY);
+  assert.equal(adult.stage.label, 'Adulte');
+  assert.equal(adult.stageIndex, 6);
+  assert.equal(adult.progress, 1);
+});
+test('growth survives offline absences, old saves, sleep and clock rollback', () => {
+  const oldSave = parsePet(JSON.stringify(initial()));
+  const grown = advancePet(oldSave, birth + 77 * DAY);
+  assert.equal(petGrowth(grown, grown.updatedAt).stageIndex, 5);
+  assert.equal(petGrowth(grown, birth).stageIndex, 5);
+  assert.equal(petGrowth({ ...grown, sleeping: true }, grown.updatedAt).stageIndex, 5);
+  assert.equal(petGrowth({ ...grown, needs: { food: 0, energy: 0, hygiene: 0, mood: 0, health: 25 } }, grown.updatedAt).stageIndex, 5);
+  assert.equal(petGrowth(grown, grown.updatedAt).daysUntilNext, 13);
+  assert.equal(petGrowth(initial(), birth - DAY).ageDays, 0);
+  assert.deepEqual(petGrowth(oldSave, birth + 77 * DAY), petGrowth(grown, grown.updatedAt));
 });

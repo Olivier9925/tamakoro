@@ -4,9 +4,10 @@ import { Text, View } from 'react-native';
 import { INCUBATOR_SOURCES } from '@/components/incubator-art';
 import { IncubatorEffects } from '@/components/incubator-effects';
 import { PixelPet } from '@/components/pixel-pet';
+import { SPRITE_SIZE } from '@/components/pet-sprite-art';
 import type { Appearance } from '@/game/pet';
 
-export function IncubatorScene({ appearance, sleeping = false, height }: { appearance: Appearance; sleeping?: boolean; height?: number }) {
+export function IncubatorScene({ appearance, stageIndex = 0, sleeping = false, height }: { appearance: Appearance; stageIndex?: number; sleeping?: boolean; height?: number }) {
   const [width, setWidth] = useState(320);
   return <View onLayout={event => setWidth(event.nativeEvent.layout.width)}
     style={{ width: '100%', height, aspectRatio: height ? undefined : 360 / 400, overflow: 'hidden', borderRadius: 20, backgroundColor: '#0c1822' }}>
@@ -23,8 +24,8 @@ export function IncubatorScene({ appearance, sleeping = false, height }: { appea
     </View>
     <View style={{ position: 'absolute', top: '36%', bottom: '21%', left: '20%', right: '20%',
       justifyContent: 'flex-end', alignItems: 'center' }}>
-      <PixelPet appearance={appearance} sleeping={sleeping}
-        pixelSize={Math.max(1, Math.floor(Math.min(width / 32, (height ?? width * 400 / 360) * 0.43 / 17)))} />
+      <PixelPet appearance={appearance} stageIndex={stageIndex} sleeping={sleeping}
+        pixelSize={Math.max(1, Math.floor(Math.min(width * 0.6 / SPRITE_SIZE, (height ?? width * 400 / 360) * 0.43 / SPRITE_SIZE)))} />
     </View>
   </View>;
 }

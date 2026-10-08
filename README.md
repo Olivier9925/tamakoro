@@ -54,11 +54,21 @@ calques SVG précalculés, alternés par Reanimated toutes les 200 ms (400 ms pe
 le sommeil, avec une lumière atténuée). Ils se mettent en pause en arrière-plan
 et disparaissent en mode de réduction des animations, laissant le décor fixe.
 
-La créature dispose de cinq poses SVG générées en code : repos, inspiration,
+La créature grandit pendant 90 jours : bébé à la naissance, petite pousse à 15 jours,
+enfant à 30 jours, juvénile à 45 jours, adolescent à 60 jours, jeune adulte à 75 jours
+et adulte à 90 jours. L’âge provient des horodatages existants, même hors ligne,
+sans changer le format des sauvegardes. Les besoins et le sommeil ne bloquent pas
+la croissance. L’écran affiche le stade et le délai avant la prochaine évolution ;
+un message annonce les changements constatés, y compris au retour après une absence.
+
+Chaque forme dispose de cinq poses SVG générées en code : repos, inspiration,
 regard à gauche, regard à droite et clignement. Reanimated alterne ces sprites
 sans interpolation, sur un cycle de huit secondes. Pendant le sommeil, seuls deux
 sprites aux yeux fermés alternent doucement sur quatre secondes. L’animation se
 met en pause en arrière-plan et reste fixe si la réduction des animations est activée.
+Les sept silhouettes partagent un canevas de 32 × 32 pixels, avec une taille,
+des nageoires et une couronne qui se développent. Chaque stade et chaque palette
+ont leurs propres sprites animés, générés et mis en cache au premier affichage.
 
 L’écran de soins adapte la hauteur de l’incubateur à l’espace disponible. Les cinq
 jauges fluorescentes et les cinq touches de soin sont regroupées sur deux rangées

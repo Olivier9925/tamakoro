@@ -12,6 +12,27 @@ export type Pet = {
   needs: Record<Need, number>;
 };
 export const HOUR = 3_600_000;
+export const DAY = 24 * HOUR;
+export const GROWTH_STAGES = [
+  { day: 0, label: 'Bébé' },
+  { day: 15, label: 'Petite pousse' },
+  { day: 30, label: 'Enfant' },
+  { day: 45, label: 'Juvénile' },
+  { day: 60, label: 'Adolescent' },
+  { day: 75, label: 'Jeune adulte' },
+  { day: 90, label: 'Adulte' },
+] as const;
+
+// Derive growth from the existing timestamps: no save-format migration is needed.
+export function petGrowth(pet: Pick<Pet, 'createdAt' | 'updatedAt'>, now: number) {
+  const age = Math.max(0, Math.max(now, pet.updatedAt) - pet.createdAt);
+  const stageIndex = Math.min(6, Math.floor(age / (15 * DAY)));
+  const stage = GROWTH_STAGES[stageIndex];
+  const next = GROWTH_STAGES[stageIndex + 1];
+  return { stageIndex, stage, ageDays: Math.floor(age / DAY),
+    daysUntilNext: next ? Math.ceil((next.day * DAY - age) / DAY) : null,
+    progress: next ? (age / DAY - stage.day) / 15 : 1 };
+}
 const clamp = (value: number) => Math.max(0, Math.min(100, value));
 
 export function createPet(name: string, appearance: Appearance, now: number): Pet {

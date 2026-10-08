@@ -1,7 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
-import { advancePet, careForPet, createPet, type Action, type Appearance, type Pet } from '@/game/pet';
+import { advancePet, careForPet, createPet, petGrowth, type Action, type Appearance, type Pet } from '@/game/pet';
 import { loadPet, savePet } from '@/game/storage';
+
+function growthNotice(previous: Pet, next: Pet) {
+  const before = petGrowth(previous, previous.updatedAt);
+  const after = petGrowth(next, next.updatedAt);
+  return after.stageIndex > before.stageIndex ? `${next.name} a évolué : ${after.stage.label} !` : null;
+}
 
 export function usePet() {
   const [pet, setPet] = useState<Pet | null>(null);
@@ -24,6 +30,10 @@ export function usePet() {
   const load = useCallback(() => {
     return loadPet().then(saved => {
       const value = saved ? advancePet(saved, Date.now()) : null;
+      if (saved && value) {
+        const notice = growthNotice(saved, value);
+        if (notice) setMessage(notice);
+      }
       current.current = value; setPet(value); setLoadFailed(false);
     }).catch(cause => {
       setLoadFailed(true);
@@ -35,6 +45,8 @@ export function usePet() {
     const refresh = () => {
       if (!current.current || locked.current) return;
       const value = advancePet(current.current, Date.now());
+      const notice = growthNotice(current.current, value);
+      if (notice) setMessage(notice);
       current.current = value; setPet(value);
     };
     const timer = setInterval(() => { if (AppState.currentState === 'active') refresh(); }, 30_000);
@@ -60,7 +72,8 @@ export function usePet() {
     if (!current.current || locked.current) return;
     if (current.current.sleeping && action !== 'sleep') return;
     locked.current = true; setBusy(true);
-    const value = careForPet(current.current, action, Date.now());
+    const previous = current.current;
+    const value = careForPet(previous, action, Date.now());
     current.current = value; setPet(value);
     const messages: Record<Action, string> = {
       feed: 'Repas servi : satiété +25, humeur +3.',
@@ -69,7 +82,8 @@ export function usePet() {
       play: 'Un bon moment : humeur +25, énergie −8, satiété −4.',
       sleep: value.sleeping ? 'Au repos : énergie +18 par heure. Les autres besoins continuent d’évoluer.' : 'Bien réveillé ! Les soins sont disponibles.',
     };
-    setMessage(`${messages[action]} Les jauges restent entre 0 et 100.`);
+    const notice = growthNotice(previous, value);
+    setMessage(notice ? `${notice} ${messages[action]}` : `${messages[action]} Les jauges restent entre 0 et 100.`);
     try { await persist(value); setSaveFailed(false); }
     catch { setSaveFailed(true); }
     finally { locked.current = false; setBusy(false); }

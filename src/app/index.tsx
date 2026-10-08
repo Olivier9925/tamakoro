@@ -8,7 +8,7 @@ import { CareKey } from '@/components/care-key';
 import { NeedGauges } from '@/components/need-gauges';
 import { TERMINAL_FONT } from '@/components/digital-art';
 import { DigitalBackground } from '@/components/digital-background';
-import { HOUR, petMood, type Action, type Appearance } from '@/game/pet';
+import { petGrowth, petMood, type Action, type Appearance } from '@/game/pet';
 import { usePet } from '@/hooks/use-pet';
 
 const colors = { panel: '#19343f', text: '#eaf6f0', muted: '#a3bcc0', accent: '#a9d875' };
@@ -31,9 +31,10 @@ export default function HomeScreen() {
   const [appearance, setAppearance] = useState<Appearance>('leaf');
   const insets = useSafeAreaInsets();
   const pet = game.pet;
+  const growth = pet ? petGrowth(pet, pet.updatedAt) : null;
   const { height } = useWindowDimensions();
   const [viewportHeight, setViewportHeight] = useState(0);
-  const sceneHeight = Math.max(180, Math.min(350, (viewportHeight || height - 100) - 340 - insets.bottom));
+  const sceneHeight = Math.max(180, Math.min(350, (viewportHeight || height - 100) - 355 - insets.bottom));
   return <View style={{ flex: 1, backgroundColor: '#090f18' }}>
     <DigitalBackground />
     <ScrollView onLayout={event => setViewportHeight(event.nativeEvent.layout.height)} contentInsetAdjustmentBehavior="automatic" keyboardShouldPersistTaps="handled"
@@ -74,7 +75,10 @@ export default function HomeScreen() {
             <Text selectable style={{ flexShrink: 1, color: '#d7ffe4', fontFamily: TERMINAL_FONT,
               fontSize: 22, fontWeight: '700', letterSpacing: 1 }}>{pet.name}</Text>
           </View>
-          <Text style={{ color: colors.muted, fontFamily: TERMINAL_FONT, fontSize: 10 }}>Jour {Math.max(1, Math.floor((pet.updatedAt - pet.createdAt) / (24 * HOUR)) + 1)} · {APPEARANCES[pet.appearance].label}</Text>
+          <Text style={{ color: colors.muted, fontFamily: TERMINAL_FONT, fontSize: 10 }}>{growth?.stage.label} · Jour {(growth?.ageDays ?? 0) + 1} · {APPEARANCES[pet.appearance].label}</Text>
+          <Text style={{ color: '#87b8c3', fontFamily: TERMINAL_FONT, fontSize: 9 }}>
+            {growth?.daysUntilNext === null ? 'Taille adulte atteinte' : `Prochaine évolution : ${growth?.daysUntilNext} j`}
+          </Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, padding: 8,
           backgroundColor: '#09151b', borderRadius: 6, borderWidth: 1, borderColor: '#2d474b' }}>
@@ -84,7 +88,7 @@ export default function HomeScreen() {
             fontSize: 11 }}>{petMood(pet)}</Text>
         </View>
       </View>
-      <IncubatorScene appearance={pet.appearance} sleeping={pet.sleeping} height={sceneHeight} />
+      <IncubatorScene appearance={pet.appearance} stageIndex={growth?.stageIndex} sleeping={pet.sleeping} height={sceneHeight} />
       <NeedGauges pet={pet} />
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
         {actions.map(({ action, label, symbol, color }) => <CareKey key={action} label={label} symbol={symbol} color={color}

@@ -1,8 +1,8 @@
 import { Image } from 'expo-image';
 import { View, type ViewStyle } from 'react-native';
 import Animated, { steps, type CSSAnimationKeyframes } from 'react-native-reanimated';
-import { APPEARANCES, PET_SPRITES } from '@/components/pet-sprite-art';
-import type { Appearance } from '@/game/pet';
+import { APPEARANCES, petSprites, SPRITE_SIZE } from '@/components/pet-sprite-art';
+import { GROWTH_STAGES, type Appearance } from '@/game/pet';
 import { useAnimationPolicy } from '@/hooks/use-animation-policy';
 
 export { APPEARANCES } from '@/components/pet-sprite-art';
@@ -19,20 +19,20 @@ const awakeAnimations = animations(5, awakeTimeline);
 const sleepAnimations = animations(2, sleepTimeline);
 const pixelSteps = steps(1, 'jump-end');
 
-export function PixelPet({ appearance, sleeping = false, small = false, pixelSize }: {
-  appearance: Appearance; sleeping?: boolean; small?: boolean; pixelSize?: number;
+export function PixelPet({ appearance, stageIndex = 0, sleeping = false, small = false, pixelSize }: {
+  appearance: Appearance; stageIndex?: number; sleeping?: boolean; small?: boolean; pixelSize?: number;
 }) {
   const { reducedMotion, active } = useAnimationPolicy();
-  const size = pixelSize ?? (small ? 4 : 12);
-  const sources = PET_SPRITES[appearance][sleeping ? 'asleep' : 'awake'];
+  const size = pixelSize ?? (small ? 2 : 6);
+  const sources = petSprites(appearance, stageIndex)[sleeping ? 'asleep' : 'awake'];
   const keyframes = sleeping ? sleepAnimations : awakeAnimations;
   const animate = !small && !reducedMotion;
-  return <View accessible accessibilityLabel={`Tamakoro ${APPEARANCES[appearance].label}${sleeping ? ' endormi' : ''}`}
-    style={{ width: size * 16, height: size * 17 }}>
+  return <View accessible accessibilityLabel={`Tamakoro ${APPEARANCES[appearance].label}, ${GROWTH_STAGES[stageIndex].label}${sleeping ? ', endormi' : ''}`}
+    style={{ width: size * SPRITE_SIZE, height: size * SPRITE_SIZE }}>
     <View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
       style={{ position: 'absolute', inset: 0 }}>
       {(animate ? sources : sources.slice(0, 1)).map((source, index) =>
-        <Animated.View key={`${sleeping}-${index}`} style={{ position: 'absolute', inset: 0,
+        <Animated.View key={`${stageIndex}-${sleeping}-${index}`} style={{ position: 'absolute', inset: 0,
           opacity: index === 0 ? 1 : 0,
           animationName: animate ? keyframes[index] : 'none',
           animationDuration: sleeping ? '4s' : '8s',
