@@ -44,10 +44,20 @@ pour iOS/TestFlight. Un build ne soumet pas automatiquement l’application aux 
 Expo demande également un premier build EAS réussi depuis la machine locale pour
 chaque plateforme afin d’initialiser le projet et ses éléments de signature.
 Utiliser le projet Expo existant lors de cette configuration ; ne pas créer un doublon.
-`app.json` devra contenir son identifiant réel dans `extra.eas.projectId`, et Android
-nécessite son identifiant d’application `android.package` avant son premier build.
+`app.json` est associé au projet existant `@olivier9925/tamakoro-virtual-pet` :
+le champ `owner`, le `slug` et `extra.eas.projectId` correspondent à ce projet.
+Ces champs doivent être commités et poussés dans la branche utilisée par Expo.
+Ils évitent l’erreur « EAS project not configured » en mode non interactif.
+`eas project:info` permet de vérifier cette association sans lancer de build.
+Android nécessite son identifiant d’application `android.package` avant son premier build.
 Les identifiants de projet et de signature se configurent avec le compte propriétaire ;
 aucune valeur ni aucun secret ne sont inventés dans le dépôt.
+
+La section `submit.production.ios` d’`eas.json` configure uniquement l’envoi vers
+App Store Connect/TestFlight. `appleId`, `appleTeamId` et `ascAppId` ne remplacent
+pas `extra.eas.projectId`. Lors de la configuration de la soumission, utiliser
+l’identifiant numérique réel de la fiche App Store Connect pour `ascAppId`, jamais
+une valeur masquée comme `***`. Un simple build GitHub ne nécessite pas ce bloc.
 
 Voir les guides officiels : [configuration EAS](https://docs.expo.dev/build/eas-json/)
 et [builds depuis GitHub](https://docs.expo.dev/build/building-from-github/).
