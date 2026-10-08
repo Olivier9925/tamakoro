@@ -25,6 +25,17 @@ function ribbon(points: string) {
     <polyline points="${points}" fill="none" stroke="#e7a145" stroke-width="2"/>`;
 }
 
+export const CIRCUIT_PATHS = [
+  '49,43 79,43 79,27 94,27',
+  '211,16 211,62 282,62 282,75 315,75',
+  '40,97 60,97 60,125 69,125',
+  '320,119 320,130 297,130 297,168',
+  '313,236 296,236 296,259 282,259',
+  '48,319 61,319 61,352 93,352',
+  '282,329 293,329 293,366 282,366',
+  '180,361 180,349 226,349',
+];
+
 export function createIncubatorSvg(sleeping: boolean) {
   const light = sleeping ? '#81c8fa' : '#ffb637';
   const hot = sleeping ? '#c7efff' : '#fff2b0';
@@ -66,14 +77,7 @@ export function createIncubatorSvg(sleeping: boolean) {
     <rect x="12" y="12" width="336" height="376" rx="18" fill="url(#board)" opacity="0.55"/>
     ${boardBits}
     <g shape-rendering="crispEdges">
-      ${ribbon('49,43 79,43 79,27 94,27')}
-      ${ribbon('211,16 211,62 282,62 282,75 315,75')}
-      ${ribbon('40,97 60,97 60,125 69,125')}
-      ${ribbon('320,119 320,130 297,130 297,168')}
-      ${ribbon('313,236 296,236 296,259 282,259')}
-      ${ribbon('48,319 61,319 61,352 93,352')}
-      ${ribbon('282,329 293,329 293,366 282,366')}
-      ${ribbon('180,361 180,349 226,349')}
+      ${CIRCUIT_PATHS.map(ribbon).join('')}
       ${hardware}
       ${rect(18, 123, 37, 190, '#080d14')}${rect(21, 126, 31, 182, 'url(#battery)')}
       ${rect(25, 130, 23, 2, '#48505c')}${rect(30, 119, 13, 5, '#697787')}

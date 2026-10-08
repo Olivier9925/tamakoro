@@ -1,9 +1,9 @@
 import { Image } from 'expo-image';
-import { useEffect, useState } from 'react';
-import { AccessibilityInfo, AppState, View, type ViewStyle } from 'react-native';
-import Animated, { steps, useReducedMotion, type CSSAnimationKeyframes } from 'react-native-reanimated';
+import { View, type ViewStyle } from 'react-native';
+import Animated, { steps, type CSSAnimationKeyframes } from 'react-native-reanimated';
 import { APPEARANCES, PET_SPRITES } from '@/components/pet-sprite-art';
 import type { Appearance } from '@/game/pet';
+import { useAnimationPolicy } from '@/hooks/use-animation-policy';
 
 export { APPEARANCES } from '@/components/pet-sprite-art';
 
@@ -22,18 +22,7 @@ const pixelSteps = steps(1, 'jump-end');
 export function PixelPet({ appearance, sleeping = false, small = false, pixelSize }: {
   appearance: Appearance; sleeping?: boolean; small?: boolean; pixelSize?: number;
 }) {
-  const initialReducedMotion = useReducedMotion();
-  const [reducedMotion, setReducedMotion] = useState(initialReducedMotion);
-  const [active, setActive] = useState(AppState.currentState === 'active');
-  useEffect(() => {
-    let mounted = true;
-    void AccessibilityInfo.isReduceMotionEnabled().then(value => {
-      if (mounted) setReducedMotion(value);
-    });
-    const motion = AccessibilityInfo.addEventListener('reduceMotionChanged', setReducedMotion);
-    const state = AppState.addEventListener('change', value => setActive(value === 'active'));
-    return () => { mounted = false; motion.remove(); state.remove(); };
-  }, []);
+  const { reducedMotion, active } = useAnimationPolicy();
   const size = pixelSize ?? (small ? 4 : 12);
   const sources = PET_SPRITES[appearance][sleeping ? 'asleep' : 'awake'];
   const keyframes = sleeping ? sleepAnimations : awakeAnimations;

@@ -47,6 +47,13 @@ bleue pendant le sommeil. Le décor fonctionne hors ligne, sans nouvelle dépend
 et s’adapte à la largeur disponible. Le sprite de la créature reste provisoire ;
 les ressources finales restent à intégrer.
 
+Des impulsions lumineuses parcourent les huit pistes orange, avec des départs
+décalés. Le ventilateur tourne par crans de 15 degrés. Les lumières sont découpées
+à la largeur exacte des pistes, en excluant les composants. L’animation utilise huit
+calques SVG précalculés, alternés par Reanimated toutes les 200 ms (400 ms pendant
+le sommeil, avec une lumière atténuée). Ils se mettent en pause en arrière-plan
+et disparaissent en mode de réduction des animations, laissant le décor fixe.
+
 La créature dispose de cinq poses SVG générées en code : repos, inspiration,
 regard à gauche, regard à droite et clignement. Reanimated alterne ces sprites
 sans interpolation, sur un cycle de huit secondes. Pendant le sommeil, seuls deux
