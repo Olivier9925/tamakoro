@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "dependencies": {
     "@expo/ui": "~57.0.22",
+    "@react-native-async-storage/async-storage": "2.2.0",
     "expo": "~57.0.27",
     "expo-constants": "~57.0.21",
     "expo-dev-client": "~57.0.19",
@@ -12,6 +13,7 @@
     "expo-glass-effect": "~57.0.4",
     "expo-image": "~57.0.5",
     "expo-linking": "~57.0.12",
+    "expo-notifications": "~57.0.22",
     "expo-router": "~57.0.25",
     "expo-splash-screen": "~57.0.9",
     "expo-status-bar": "~57.0.1",
@@ -60,7 +62,8 @@
     "build:testflight": "npx eas-cli@latest build --profile production --platform ios --auto-submit",
     "submit:ios": "npx eas-cli@latest submit -p ios --latest",
     "submit:testflight": "npx eas-cli@latest submit -p ios --latest --profile production",
-    "localBuild:ios": "expo prebuild --platform ios && expo run:ios --configuration Release"
+    "localBuild:ios": "expo prebuild --platform ios && expo run:ios --configuration Release",
+    "test": "node --test tests/*.test.cjs"
   },
   "private": true,
   "engines": {
