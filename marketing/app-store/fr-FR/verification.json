@@ -1,0 +1,24 @@
+[
+  {
+    "file": "tamakoro-entete-3840x1646.png",
+    "width": 3840,
+    "height": 1646,
+    "format": "png",
+    "colourSpace": "srgb",
+    "channels": 3,
+    "hasAlpha": false,
+    "embeddedProfile": true,
+    "bytes": 4021921
+  },
+  {
+    "file": "tamakoro-recherche-3840x2560.png",
+    "width": 3840,
+    "height": 2560,
+    "format": "png",
+    "colourSpace": "srgb",
+    "channels": 3,
+    "hasAlpha": false,
+    "embeddedProfile": true,
+    "bytes": 3757291
+  }
+]

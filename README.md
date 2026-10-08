@@ -53,6 +53,36 @@ Android nécessite son identifiant d’application `android.package` avant son p
 Les identifiants de projet et de signature se configurent avec le compte propriétaire ;
 aucune valeur ni aucun secret ne sont inventés dans le dépôt.
 
+Si le build GitHub échoue avec « Credentials are not set up », initialiser la
+signature depuis un terminal interactif, dans ce dossier :
+
+```sh
+npm run credentials:ios
+```
+
+Cette commande configure les credentials iOS du profil `production`, sans lancer
+de build ni de soumission. Se connecter à Apple Developer lorsqu’EAS le propose
+(mot de passe et validation à deux facteurs à saisir directement dans le terminal),
+sélectionner l’équipe `F8JXH55Q48`, réutiliser un certificat de distribution valide
+si disponible et laisser EAS créer le profil App Store pour
+`com.olivier9925.tamakoro`. Les éléments de signature sont conservés sur EAS.
+Le message « Distribution Certificate is not validated for non-interactive builds »
+ne prouve pas à lui seul que le certificat est invalide : le blocage est l’absence
+d’un ensemble de credentials prêt à l’emploi.
+
+Lancer ensuite un premier build EAS depuis ce terminal avec
+`npm run build:prod -- --platform ios`, puis utiliser les builds GitHub.
+Il s’agit d’un build cloud initié depuis la machine, distinct du build Xcode local
+`npm run ios`. Le profil `production` cible App Store/TestFlight ; le profil
+`simulator` ne remplace pas sa configuration de signature.
+
+`ios.infoPlist.ITSAppUsesNonExemptEncryption` vaut `false` pour le MVP actuel,
+qui n’implémente pas de chiffrement non exempt. Ce champ supprime la question
+manuelle de conformité au chiffrement lors du traitement TestFlight.
+Réévaluer cette déclaration si une fonctionnalité de chiffrement est ajoutée.
+L’absence de variables d’environnement EAS est normale pour ce MVP hors ligne,
+et l’avertissement Node.js `punycode` n’est pas la cause de l’échec de signature.
+
 La section `submit.production.ios` d’`eas.json` configure uniquement l’envoi vers
 App Store Connect/TestFlight. `appleId`, `appleTeamId` et `ascAppId` ne remplacent
 pas `extra.eas.projectId`. Lors de la configuration de la soumission, utiliser

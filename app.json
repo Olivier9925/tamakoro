@@ -10,7 +10,10 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/images/tamakoro-icon-v2.png",
-      "bundleIdentifier": "com.olivier9925.tamakoro"
+      "bundleIdentifier": "com.olivier9925.tamakoro",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "icon": "./assets/images/tamakoro-icon-v2.png",
