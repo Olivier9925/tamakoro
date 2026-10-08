@@ -92,7 +92,30 @@ une valeur masquée comme `***`. Un simple build GitHub ne nécessite pas ce blo
 Voir les guides officiels : [configuration EAS](https://docs.expo.dev/build/eas-json/)
 et [builds depuis GitHub](https://docs.expo.dev/build/building-from-github/).
 
-## Organisation
+## Pages publiques et confidentialité
+
+`index.html` contient la politique de confidentialité de Tamakoro, adaptée à la
+version mobile hors ligne : sauvegarde et préférences locales, rappels facultatifs,
+absence de suivi intégré, assistance par e-mail et hébergement du site.
+`assist.html` est la page d’assistance ; les deux pages sont reliées entre elles.
+Elles ne chargent aucune ressource distante et ne nécessitent pas de build Expo.
+
+Pour les publier comme le site CheckIt, configurer GitHub Pages sur le dépôt
+`Olivier9925/tamakoro`, avec la branche `main` et le dossier `/ (root)` comme source,
+puis commiter et pousser ces fichiers. Après publication, les URLs attendues sont
+`https://olivier9925.github.io/tamakoro/` pour la confidentialité et
+`https://olivier9925.github.io/tamakoro/assist.html` pour l’assistance.
+Vérifier que ces adresses sont accessibles avant de les saisir dans App Store Connect.
+La déclaration Apple « Données non collectées » est cohérente avec le code mobile
+actuel, qui ne transmet pas de données de jeu au développeur ; la réévaluer lors
+de tout ajout de service ou SDK distant. La politique devra aussi être accessible
+depuis l’app avant sa soumission. Aucun déploiement ou changement App Store Connect
+n’est effectué par la création de ces pages.
+
+Références : [confidentialité Apple](https://developer.apple.com/app-store/app-privacy-details/)
+et [hébergement GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages).
+
+## Organisation de l’application
 
 Le démarrage affiche l’incubateur pixelisé plein écran et le titre central Tamakoro.
 Les SVG et PNG `assets/images/tamakoro-splash*` reprennent les dessins du jeu ;
