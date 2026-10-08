@@ -163,6 +163,8 @@ L’écran de soins adapte la hauteur de l’incubateur à l’espace disponible
 jauges fluorescentes et les cinq touches de soin sont regroupées sur deux rangées
 compactes. Les touches ont une base en relief et s’enfoncent à l’appui. Le défilement
 reste disponible pour les grands textes d’accessibilité et les messages d’erreur.
+Le défilement est limité au contenu qui dépasse l’écran, sans rebond ni effet
+de dépassement lorsque tout tient dans la hauteur disponible.
 
 L’en-tête reprend une plaque électronique avec un titre pixel art dessiné en SVG.
 Le nom de la créature utilise la police monospace du système (Menlo sur iOS),

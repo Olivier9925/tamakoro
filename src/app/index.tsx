@@ -45,6 +45,7 @@ export default function HomeScreen() {
     <DigitalBackground />
     <ScrollView onLayout={event => setViewportHeight(event.nativeEvent.layout.height)} contentInsetAdjustmentBehavior="automatic"
     automaticallyAdjustKeyboardInsets keyboardDismissMode="on-drag" keyboardShouldPersistTaps="handled"
+    bounces={false} alwaysBounceVertical={false} overScrollMode="never"
     contentContainerStyle={{ flexGrow: 1, padding: pet ? 14 : 20, paddingBottom: Math.max(insets.bottom, 12),
       gap: pet ? 10 : 16, width: '100%', maxWidth: 560, alignSelf: 'center' }}>
     {game.loading ? <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 16 }}>
