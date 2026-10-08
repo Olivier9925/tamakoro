@@ -79,6 +79,8 @@ L’en-tête reprend une plaque électronique avec un titre pixel art dessiné e
 Le nom de la créature utilise la police monospace du système (Menlo sur iOS),
 avec un préfixe de terminal. Le fond bleu nuit est généré en SVG : grille légère,
 points et quelques pistes périphériques, sans animation ni ressource distante.
+Les messages de soin et de sauvegarde sont regroupés dans un cartouche de terminal
+qui partage le fond, la bordure en relief et la police du cartouche du nom.
 
 ### Règles de départ à ajuster
 

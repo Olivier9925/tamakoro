@@ -8,6 +8,7 @@ import { CareKey } from '@/components/care-key';
 import { NeedGauges } from '@/components/need-gauges';
 import { TERMINAL_FONT } from '@/components/digital-art';
 import { DigitalBackground } from '@/components/digital-background';
+import { TerminalPanel } from '@/components/terminal-panel';
 import { petGrowth, petMood, type Action, type Appearance } from '@/game/pet';
 import { usePet } from '@/hooks/use-pet';
 
@@ -34,7 +35,7 @@ export default function HomeScreen() {
   const growth = pet ? petGrowth(pet, pet.updatedAt) : null;
   const { height } = useWindowDimensions();
   const [viewportHeight, setViewportHeight] = useState(0);
-  const sceneHeight = Math.max(180, Math.min(350, (viewportHeight || height - 100) - 355 - insets.bottom));
+  const sceneHeight = Math.max(180, Math.min(350, (viewportHeight || height - 100) - 400 - insets.bottom));
   return <View style={{ flex: 1, backgroundColor: '#090f18' }}>
     <DigitalBackground />
     <ScrollView onLayout={event => setViewportHeight(event.nativeEvent.layout.height)} contentInsetAdjustmentBehavior="automatic" keyboardShouldPersistTaps="handled"
@@ -66,9 +67,7 @@ export default function HomeScreen() {
           disabled={game.busy || !name.trim()} onPress={() => { void game.adopt(name, appearance); }} />
       </>}
     </> : <>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8,
-        padding: 10, backgroundColor: '#101c26', borderRadius: 12, borderWidth: 1, borderColor: '#354650',
-        borderTopColor: '#5a6974', boxShadow: 'inset 0 1px 0 #82939d22, 0 3px 0 #03080d' }}>
+      <TerminalPanel style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
         <View style={{ gap: 4, flex: 1, minWidth: 120 }}>
           <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
             <Text accessible={false} style={{ color: '#97ed72', fontFamily: TERMINAL_FONT, fontSize: 18 }}>&gt;_</Text>
@@ -87,7 +86,7 @@ export default function HomeScreen() {
           <Text style={{ color: pet.sleeping ? '#81c8fa' : colors.accent, fontFamily: TERMINAL_FONT,
             fontSize: 11 }}>{petMood(pet)}</Text>
         </View>
-      </View>
+      </TerminalPanel>
       <IncubatorScene appearance={pet.appearance} stageIndex={growth?.stageIndex} sleeping={pet.sleeping} height={sceneHeight} />
       <NeedGauges pet={pet} />
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
@@ -96,13 +95,26 @@ export default function HomeScreen() {
         <CareKey label={pet.sleeping ? 'Réveiller' : 'Dormir'} symbol={pet.sleeping ? '☀' : '☾'} color="#c6a0ff"
           disabled={game.busy} onPress={() => { void game.care('sleep'); }} />
       </View>
-      <Text accessibilityLiveRegion="polite" style={{ color: colors.text, fontSize: 11, lineHeight: 16, textAlign: 'center' }}>
-        {game.message.replace(' Les jauges restent entre 0 et 100.', '')}
-      </Text>
-      {game.saveFailed ? <View style={{ gap: 10 }}>
-        <Text accessibilityRole="alert" selectable style={{ color: '#ffb2a5' }}>Sauvegarde impossible. Tes soins restent en mémoire : réessaie avant de fermer l’application.</Text>
-        <Control label="Réessayer la sauvegarde" disabled={game.busy} onPress={() => { void game.retrySave(); }} />
-      </View> : <Text style={{ color: colors.muted, fontSize: 12, textAlign: 'center' }}>{game.busy ? 'Sauvegarde…' : 'Partie locale · Soins sauvegardés automatiquement'}</Text>}
+      <TerminalPanel style={{ gap: 8 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
+          <Text accessible={false} style={{ color: '#97ed72', fontFamily: TERMINAL_FONT, fontSize: 12, lineHeight: 16 }}>&gt;_</Text>
+          <Text accessibilityLiveRegion="polite" style={{ flex: 1, color: '#d7ffe4', fontFamily: TERMINAL_FONT, fontSize: 11, lineHeight: 16 }}>
+            {game.message.replace(' Les jauges restent entre 0 et 100.', '')}
+          </Text>
+        </View>
+        <View accessible={false} style={{ height: 1, backgroundColor: '#2c404b' }} />
+        {game.saveFailed ? <View style={{ gap: 10 }}>
+          <Text accessibilityRole="alert" selectable style={{ color: '#ffb2a5', fontFamily: TERMINAL_FONT, fontSize: 11, lineHeight: 16 }}>Sauvegarde impossible. Tes soins restent en mémoire : réessaie avant de fermer l’application.</Text>
+          <Control label="Réessayer la sauvegarde" disabled={game.busy} onPress={() => { void game.retrySave(); }} />
+        </View> : <View style={{ flexDirection: 'row', gap: 8, alignItems: 'flex-start' }}>
+          <View accessible={false} style={{ width: 5, height: 5, marginTop: 4, borderRadius: 1,
+            backgroundColor: game.busy ? '#ffb637' : '#97ed72' }} />
+          <View style={{ flex: 1, gap: 2 }}>
+            <Text style={{ color: colors.muted, fontFamily: TERMINAL_FONT, fontSize: 10, lineHeight: 14 }}>Partie locale</Text>
+            <Text accessibilityLiveRegion="polite" style={{ color: '#87b8c3', fontFamily: TERMINAL_FONT, fontSize: 10, lineHeight: 14 }}>{game.busy ? 'Sauvegarde…' : 'Soins sauvegardés automatiquement'}</Text>
+          </View>
+        </View>}
+      </TerminalPanel>
 
     </>}
   </ScrollView></View>;
