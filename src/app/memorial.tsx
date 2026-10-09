@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { APPEARANCES } from '@/components/pixel-pet';
+import { APPEARANCES, PixelPet } from '@/components/pixel-pet';
 import { DigitalBackground } from '@/components/digital-background';
 import { TERMINAL_FONT } from '@/components/digital-art';
 import { TerminalPanel } from '@/components/terminal-panel';
@@ -49,11 +49,17 @@ export default function MemorialScreen() {
       </TerminalPanel> : [...records].reverse().map(({ id, pet }) => {
         const growth = petGrowth(pet, pet.updatedAt);
         return <TerminalPanel key={id} style={{ gap: 8 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-            <Text selectable style={{ flex: 1, color: '#d7ffe4', fontFamily: TERMINAL_FONT, fontSize: 17, fontWeight: '700' }}>{pet.name}</Text>
-            <Text style={{ color: '#87b8c3', fontFamily: TERMINAL_FONT, fontSize: 10 }}>{APPEARANCES[pet.appearance].label}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <View style={{ width: 72, height: 72, alignItems: 'center', justifyContent: 'center',
+              backgroundColor: '#09151b', borderWidth: 1, borderColor: '#2d474b', borderRadius: 7 }}>
+              <PixelPet appearance={pet.appearance} stageIndex={growth.stageIndex} sleeping small />
+            </View>
+            <View style={{ flex: 1, gap: 4 }}>
+              <Text selectable style={{ color: '#d7ffe4', fontFamily: TERMINAL_FONT, fontSize: 17, fontWeight: '700' }}>{pet.name}</Text>
+              <Text style={{ color: '#87b8c3', fontFamily: TERMINAL_FONT, fontSize: 10 }}>{APPEARANCES[pet.appearance].label} · {growth.stage.label}</Text>
+            </View>
           </View>
-          <Text style={{ color: '#87b8c3', fontFamily: TERMINAL_FONT, fontSize: 10 }}>{growth.stage.label} · Âge : {growth.ageDays} j et {growth.ageHours % 24} h</Text>
+          <Text style={{ color: '#87b8c3', fontFamily: TERMINAL_FONT, fontSize: 10 }}>Âge : {growth.ageDays} j et {growth.ageHours % 24} h</Text>
           <Text style={{ color: '#a3bcc0', fontFamily: TERMINAL_FONT, fontSize: 10 }}>Adopté le {dateLabel(pet.createdAt)}</Text>
           <Text style={{ color: '#a3bcc0', fontFamily: TERMINAL_FONT, fontSize: 10 }}>Décédé le {dateLabel(pet.updatedAt)}</Text>
           <View accessible={false} style={{ height: 1, backgroundColor: '#2c404b' }} />
