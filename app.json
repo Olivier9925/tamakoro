@@ -3,7 +3,7 @@
     "name": "Tamakoro – Virtual Pet",
     "slug": "tamakoro-virtual-pet",
     "owner": "olivier9925",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/tamakoro-icon-v2.png",
     "scheme": "tamakoro",
