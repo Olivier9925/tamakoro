@@ -11,6 +11,14 @@ function growthNotice(previous: Pet, next: Pet) {
   return after.stageIndex > before.stageIndex ? `${next.name} a évolué : ${after.stage.label} !` : null;
 }
 
+function elapsedNotice(previous: Pet, next: Pet) {
+  const notices = [growthNotice(previous, next)];
+  if (!isPetDead(next) && previous.sleeping && !next.sleeping) {
+    notices.push(`${next.name} s’est réveillé automatiquement après avoir récupéré toute son énergie.`);
+  }
+  return notices.filter(Boolean).join(' ') || null;
+}
+
 export function usePet() {
   const [pet, setPet] = useState<Pet | null>(null);
   const current = useRef<Pet | null>(null);
@@ -38,11 +46,11 @@ export function usePet() {
     return loadPet().then(saved => {
       const value = saved ? advancePet(saved, Date.now()) : null;
       if (saved && value) {
-        const notice = growthNotice(saved, value);
+        const notice = elapsedNotice(saved, value);
         if (notice) setMessage(notice);
       }
       current.current = value; setPet(value); setLoadFailed(false);
-      if (value && isPetDead(value) && saved && !isPetDead(saved)) {
+      if (value && saved && ((isPetDead(value) && !isPetDead(saved)) || (saved.sleeping && !value.sleeping))) {
         void persist(value).then(() => setSaveFailed(false), () => setSaveFailed(true));
       }
     }).catch(cause => {
@@ -54,11 +62,12 @@ export function usePet() {
   useEffect(() => {
     const refresh = () => {
       if (!current.current || locked.current) return;
-      const value = advancePet(current.current, Date.now());
-      const notice = growthNotice(current.current, value);
+      const previous = current.current;
+      const value = advancePet(previous, Date.now());
+      const notice = elapsedNotice(previous, value);
       if (notice) setMessage(notice);
       current.current = value; setPet(value);
-      if (isPetDead(value) && notice) {
+      if ((isPetDead(value) && notice) || (previous.sleeping && !value.sleeping)) {
         void persist(value).then(() => setSaveFailed(false), () => setSaveFailed(true));
       }
     };
@@ -94,7 +103,7 @@ export function usePet() {
       hydrate: 'Une gorgée : satiété +8, santé +5.',
       clean: 'Tout propre : hygiène +35, humeur +5.',
       play: 'Un bon moment : humeur +25, énergie −8, satiété −4.',
-      sleep: value.sleeping ? 'Au repos : énergie +18 par heure. Les autres besoins continuent d’évoluer.' : 'Bien réveillé ! Les soins sont disponibles.',
+      sleep: value.sleeping ? 'Au repos : +18 énergie par heure, réveil automatique à 100. Les autres besoins continuent d’évoluer.' : 'Bien réveillé ! Les soins sont disponibles.',
     };
     const notice = growthNotice(previous, value);
     setMessage(isPetDead(value) ? petHealthAlert(value)! : notice ? `${notice} ${messages[action]}` : `${messages[action]} Les jauges restent entre 0 et 100.`);

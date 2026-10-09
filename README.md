@@ -206,7 +206,7 @@ qui partage le fond, la bordure en relief et la police du cartouche du nom.
 
 Le bouton « ? » de l’en-tête ouvre à tout moment un guide hors ligne, avant
 l’adoption comme pendant la partie ou sur l’écran souvenir. Il explique les effets
-des soins, le réveil manuel, les formes tous les 15 jours jusqu’à 90 jours,
+des soins, le réveil manuel ou automatique à énergie pleine, les formes tous les 15 jours jusqu’à 90 jours,
 les absences et le décès à santé zéro. La route modale `/help` conserve l’écran
 de jeu en place ; « × » ferme l’aide, ou revient à l’accueil si elle a été ouverte
 directement. Le guide défile sur les petits écrans et avec des textes agrandis.
@@ -269,8 +269,10 @@ demande du joueur, la protection initiale du MVP contre les pertes irréversible
 Les alertes commencent sous 25 pour satiété, énergie et hygiène, sous 30 pour
 humeur et sous 40 pour santé. Les jauges deviennent rouges sous 20 (sous 10 pour
 énergie), et le cartouche explique les causes de la baisse de santé et les soins.
-Les soins et leurs effets sont expliqués dans l’écran. Le sommeil dure jusqu’au réveil
-manuel. Le temps est calculé à partir de l’horodatage sauvegardé, sans exécution en arrière-plan.
+Les soins et leurs effets sont expliqués dans l’écran. Le sommeil rend 18 points
+d’énergie par heure et se termine automatiquement à 100 ; le joueur peut aussi
+réveiller son Tamakoro plus tôt. Le temps est calculé à partir de l’horodatage
+sauvegardé, sans exécution en arrière-plan.
 Un recul de l’horloge ne fait pas reculer l’état de la créature.
 
 Après l’ajout d’AsyncStorage, un ancien development build doit être recompilé pour

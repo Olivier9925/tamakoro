@@ -58,11 +58,11 @@ export function createPet(name: string, appearance: Appearance, now: number): Pe
     sleeping: false, needs: { food: 85, energy: 90, hygiene: 85, mood: 90, health: 100 } };
 }
 
-// Rates per hour. Segmenting at care thresholds keeps health independent of refresh frequency.
-export function advancePet(pet: Pet, now: number): Pet {
-  if (isPetDead(pet) || now <= pet.updatedAt) return pet;
-  const hours = (now - pet.updatedAt) / HOUR;
-  const rates = { food: -4, energy: pet.sleeping ? 18 : -3, hygiene: -2, mood: pet.sleeping ? -1 : -2 };
+// Apply one interval with fixed sleep state. Threshold segmentation keeps health
+// independent of refresh frequency and lets advancePet split at the wake instant.
+function advanceInterval(pet: Pet, hours: number, sleeping: boolean, endAt: number): Pet {
+  if (hours <= 0 || isPetDead(pet)) return pet;
+  const rates = { food: -4, energy: sleeping ? 18 : -3, hygiene: -2, mood: sleeping ? -1 : -2 };
   const needs = { ...pet.needs };
   const breaks = [0, hours];
   let elapsed = hours;
@@ -87,8 +87,28 @@ export function advancePet(pet: Pet, now: number): Pet {
   for (const key of ['food', 'energy', 'hygiene', 'mood'] as const) {
     needs[key] = clamp(needs[key] + rates[key] * elapsed);
   }
-  return { ...pet, updatedAt: elapsed === hours ? now : pet.updatedAt + elapsed * HOUR,
-    sleeping: needs.health === 0 ? false : pet.sleeping, needs };
+  return { ...pet, updatedAt: elapsed === hours ? endAt : pet.updatedAt + elapsed * HOUR,
+    sleeping: needs.health === 0 ? false : sleeping, needs };
+}
+
+// Energy recovers during sleep until it reaches 100, then awake rates resume.
+// Splitting at the exact wake instant also handles app closures and long absences.
+export function advancePet(pet: Pet, now: number): Pet {
+  if (isPetDead(pet) || now < pet.updatedAt) return pet;
+  if (!pet.sleeping) {
+    if (now === pet.updatedAt) return pet;
+    return advanceInterval(pet, (now - pet.updatedAt) / HOUR, false, now);
+  }
+
+  const hours = (now - pet.updatedAt) / HOUR;
+  const hoursUntilWake = Math.max(0, (100 - pet.needs.energy) / 18);
+  if (hours < hoursUntilWake) return advanceInterval(pet, hours, true, now);
+
+  const wakeAt = pet.updatedAt + hoursUntilWake * HOUR;
+  const slept = advanceInterval(pet, hoursUntilWake, true, wakeAt);
+  if (isPetDead(slept)) return slept;
+  const awake = { ...slept, sleeping: false, needs: { ...slept.needs, energy: 100 } };
+  return advanceInterval(awake, hours - hoursUntilWake, false, now);
 }
 
 export function careForPet(pet: Pet, action: Action, now: number): Pet {

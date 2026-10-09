@@ -32,7 +32,7 @@ export function HelpGuide() {
         <GuideText>Les jauges vont de 0 à 100. Orange : besoin faible. Rouge : besoin critique.</GuideText>
       </GuideSection>
       <GuideSection title="Dormir et réveiller">
-        <GuideText>Dormir rend 18 points d’énergie par heure. Le sommeil continue jusqu’à un appui sur Réveiller, même à 100 d’énergie. Réveille-le pour accéder aux autres soins.</GuideText>
+        <GuideText>Dormir rend 18 points d’énergie par heure. À 100 d’énergie, ton Tamakoro se réveille automatiquement. Tu peux aussi le réveiller avant pour accéder aux autres soins.</GuideText>
         <GuideText>La satiété, l’hygiène et l’humeur continuent de baisser pendant son sommeil.</GuideText>
       </GuideSection>
       <GuideSection title="Grandir ensemble">
