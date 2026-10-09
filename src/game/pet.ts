@@ -4,6 +4,9 @@ export const NEEDS = ['food', 'energy', 'hygiene', 'mood', 'health'] as const;
 export type Need = (typeof NEEDS)[number];
 export type Appearance = 'leaf' | 'ember' | 'water';
 export type Action = 'feed' | 'hydrate' | 'clean' | 'play' | 'sleep';
+export const ACTION_ENERGY_COST: Record<Exclude<Action, 'sleep'>, number> = {
+  feed: 4, hydrate: 3, clean: 6, play: 12,
+};
 export type Pet = {
   version: 1;
   name: string;
@@ -118,11 +121,13 @@ export function careForPet(pet: Pet, action: Action, now: number): Pet {
   if (isPetDead(next)) return next;
   if (action === 'sleep') return { ...next, sleeping: !next.sleeping };
   if (next.sleeping) return next;
+  if (next.needs.energy < ACTION_ENERGY_COST[action]) return next;
   const needs = { ...next.needs };
+  needs.energy -= ACTION_ENERGY_COST[action];
   if (action === 'feed') { needs.food += 25; needs.mood += 3; }
   if (action === 'hydrate') { needs.food += 8; needs.health += 5; }
   if (action === 'clean') { needs.hygiene += 35; needs.mood += 5; }
-  if (action === 'play') { needs.mood += 25; needs.energy -= 8; needs.food -= 4; }
+  if (action === 'play') { needs.mood += 25; needs.food -= 4; }
   for (const key of NEEDS) needs[key] = clamp(needs[key]);
   return { ...next, needs };
 }

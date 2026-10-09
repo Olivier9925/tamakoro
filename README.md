@@ -279,6 +279,10 @@ réveiller son Tamakoro plus tôt. Le temps est calculé à partir de l’horoda
 sauvegardé, sans exécution en arrière-plan.
 Un recul de l’horloge ne fait pas reculer l’état de la créature.
 
+Chaque soin éveillé consomme aussi de l’énergie : nourrir −4, hydrater −3,
+nettoyer −6 et jouer −12. Une action n’est pas exécutée si le Tamakoro n’a pas
+l’énergie nécessaire ; dormir recharge la jauge à raison de 18 points par heure.
+
 Après l’ajout d’AsyncStorage, un ancien development build doit être recompilé pour
 inclure le module natif. Expo Go compatible avec le SDK inclut ce module.
 

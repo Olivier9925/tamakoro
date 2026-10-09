@@ -9,7 +9,7 @@ import { NeedGauges } from '@/components/need-gauges';
 import { TERMINAL_FONT } from '@/components/digital-art';
 import { DigitalBackground } from '@/components/digital-background';
 import { TerminalPanel } from '@/components/terminal-panel';
-import { isPetDead, NEEDS, needSeverity, petGrowth, petHealthAlert, petMood, type Action, type Appearance } from '@/game/pet';
+import { isPetDead, NEEDS, needSeverity, petGrowth, petHealthAlert, petMood, type Action, type Appearance, type Need } from '@/game/pet';
 import { usePet } from '@/hooks/use-pet';
 import { useI18n } from '@/i18n/provider';
 import { appearanceLabel, stageLabel, type TranslationKey } from '@/i18n/messages';
@@ -30,7 +30,7 @@ function formatWakeTime(energy: number, t: ReturnType<typeof useI18n>['t']) {
   if (remainingMinutes === 0) return `${hours} ${t('time.hourShort')}`;
   return `${hours} ${t('time.hourShort')} ${remainingMinutes.toString().padStart(2, '0')} ${t('time.minuteShort')}`;
 }
-const actions: { action: Action; label: TranslationKey; symbol: string; color: string }[] = [
+const actions: { action: Exclude<Action, 'sleep'>; label: TranslationKey; symbol: string; color: string }[] = [
   { action: 'feed', label: 'action.feed', symbol: '🍎', color: '#ffac69' },
   { action: 'hydrate', label: 'action.hydrate', symbol: '💧', color: '#59efff' },
   { action: 'play', label: 'action.play', symbol: '✦', color: '#a0ff77' },
@@ -47,11 +47,17 @@ export default function HomeScreen() {
   const game = usePet();
   const { t, language } = useI18n();
   const [lastAction, setLastAction] = useState<{ action: 'feed' | 'hydrate' | 'play' | 'clean'; at: number } | null>(null);
+  const [gaugeFeedback, setGaugeFeedback] = useState<Partial<Record<Need, number>> | null>(null);
   useEffect(() => {
     if (!lastAction) return;
     const timer = setTimeout(() => setLastAction(null), 2_200);
     return () => clearTimeout(timer);
   }, [lastAction]);
+  useEffect(() => {
+    if (!gaugeFeedback) return;
+    const timer = setTimeout(() => setGaugeFeedback(null), 1_800);
+    return () => clearTimeout(timer);
+  }, [gaugeFeedback]);
   const [name, setName] = useState('Momo');
   const [appearance, setAppearance] = useState<Appearance>('leaf');
   const [preparingAdoption, setPreparingAdoption] = useState(false);
@@ -133,10 +139,11 @@ export default function HomeScreen() {
       </TerminalPanel>
       <IncubatorScene appearance={pet.appearance} stageIndex={growth?.stageIndex} sleeping={pet.sleeping || dead} dead={dead} height={sceneHeight}
         action={lastAction ? `${lastAction.action}-${lastAction.at}` : null} />
-      <NeedGauges pet={pet} />
+      <NeedGauges pet={pet} deltas={gaugeFeedback ?? undefined} />
       {dead ? <Control label={t('home.adoptNew')} disabled={game.busy} onPress={() => { setName(''); setPreparingAdoption(true); }} /> : <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
         {actions.map(({ action, label, symbol, color }) => <CareKey key={action} label={t(label)} symbol={symbol} color={color}
-          disabled={game.busy || pet.sleeping} onPress={() => { if (action !== 'sleep') setLastAction({ action, at: Date.now() }); void game.care(action); }} />)}
+          disabled={game.busy || pet.sleeping} onPress={() => { setLastAction({ action, at: Date.now() });
+            void game.care(action, deltas => setGaugeFeedback(deltas)); }} />)}
         <CareKey label={pet.sleeping ? t('action.wake') : t('action.sleep')} symbol={pet.sleeping ? '☀' : '☾'} color="#c6a0ff"
           disabled={game.busy} onPress={() => { void game.care('sleep'); }} />
       </View>}

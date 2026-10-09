@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
-import { advancePet, careForPet, createPet, isPetDead, petGrowth, petHealthAlert, type Action, type Appearance, type Pet } from '@/game/pet';
+import { ACTION_ENERGY_COST, advancePet, careForPet, createPet, isPetDead, NEEDS, petGrowth, petHealthAlert, type Action, type Appearance, type Need, type Pet } from '@/game/pet';
 import { archivePet, loadPet, loadPetRecords, savePet, type PetRecord } from '@/game/storage';
 import { reminders } from '@/reminders/reminders';
 import { stageLabel, translate } from '@/i18n/messages';
@@ -119,12 +119,14 @@ export function usePet() {
     } catch { setError(translate('home.saveFailure')); return false; }
     finally { locked.current = false; setBusy(false); }
   };
-  const care = async (action: Action) => {
+  const care = async (action: Action, onApplied?: (deltas: Partial<Record<Need, number>>) => void) => {
     if (!current.current || locked.current || isPetDead(current.current)) return;
     if (current.current.sleeping && action !== 'sleep') return;
     locked.current = true; setBusy(true);
     const previous = current.current;
-    const value = careForPet(previous, action, Date.now());
+    const now = Date.now();
+    const evaluated = advancePet(previous, now);
+    const value = careForPet(previous, action, now);
     current.current = value; setPet(value);
     const messages: Record<Action, string> = {
       feed: translate('care.feed'),
@@ -134,7 +136,14 @@ export function usePet() {
       sleep: value.sleeping ? translate('care.sleep') : translate('care.wake'),
     };
     const notice = growthNotice(previous, value);
-    setMessage(isPetDead(value) ? petHealthAlert(value)! : notice ? `${notice} ${messages[action]}` : `${messages[action]}${translate('care.clamped')}`);
+    const insufficientEnergy = action !== 'sleep' && evaluated.needs.energy < ACTION_ENERGY_COST[action];
+    if (!isPetDead(value) && !insufficientEnergy && action !== 'sleep') {
+      const deltas = Object.fromEntries(NEEDS.map(key => [key, value.needs[key] - evaluated.needs[key]])
+        .filter(([, delta]) => delta !== 0)) as Partial<Record<Need, number>>;
+      onApplied?.(deltas);
+    }
+    setMessage(isPetDead(value) ? petHealthAlert(value)! : insufficientEnergy ? translate('care.lowEnergy')
+      : notice ? `${notice} ${messages[action]}` : `${messages[action]}${translate('care.clamped')}`);
     try { await persist(value, isPetDead(value)); setSaveFailed(false); }
     catch (cause) {
       setSaveFailed(true);
