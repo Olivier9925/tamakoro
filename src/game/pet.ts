@@ -29,7 +29,7 @@ export function petGrowth(pet: Pick<Pet, 'createdAt' | 'updatedAt' | 'needs'>, n
   const stageIndex = Math.min(6, Math.floor(age / (15 * DAY)));
   const stage = GROWTH_STAGES[stageIndex];
   const next = GROWTH_STAGES[stageIndex + 1];
-  return { stageIndex, stage, ageDays: Math.floor(age / DAY),
+  return { stageIndex, stage, ageDays: Math.floor(age / DAY), ageHours: Math.floor(age / HOUR), nextStage: next ?? null,
     daysUntilNext: next ? Math.ceil((next.day * DAY - age) / DAY) : null,
     progress: next ? (age / DAY - stage.day) / 15 : 1 };
 }

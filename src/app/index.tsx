@@ -13,6 +13,23 @@ import { isPetDead, NEEDS, needSeverity, petGrowth, petHealthAlert, petMood, typ
 import { usePet } from '@/hooks/use-pet';
 
 const colors = { panel: '#19343f', text: '#eaf6f0', muted: '#a3bcc0', accent: '#a9d875' };
+function formatAge(totalHours: number) {
+  const days = Math.floor(totalHours / 24);
+  const hours = totalHours % 24;
+  const dayLabel = `${days} ${days === 1 ? 'jour' : 'jours'}`;
+  const hourLabel = `${hours} ${hours === 1 ? 'heure' : 'heures'}`;
+  if (days === 0) return `Âge : ${hourLabel}`;
+  if (hours === 0) return `Âge : ${dayLabel}`;
+  return `Âge : ${dayLabel} et ${hourLabel}`;
+}
+function formatWakeTime(energy: number) {
+  const minutes = Math.ceil(Math.max(0, 100 - energy) / 18 * 60);
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+  if (hours === 0) return `${remainingMinutes} min`;
+  if (remainingMinutes === 0) return `${hours} h`;
+  return `${hours} h ${remainingMinutes.toString().padStart(2, '0')} min`;
+}
 const actions: { action: Action; label: string; symbol: string; color: string }[] = [
   { action: 'feed', label: 'Nourrir', symbol: '🍎', color: '#ffac69' },
   { action: 'hydrate', label: 'Hydrater', symbol: '💧', color: '#59efff' },
@@ -89,10 +106,20 @@ export default function HomeScreen() {
             <Text selectable style={{ flexShrink: 1, color: '#d7ffe4', fontFamily: TERMINAL_FONT,
               fontSize: 22, fontWeight: '700', letterSpacing: 1 }}>{pet.name}</Text>
           </View>
-          <Text style={{ color: colors.muted, fontFamily: TERMINAL_FONT, fontSize: 10 }}>{growth?.stage.label} · Jour {(growth?.ageDays ?? 0) + 1} · {APPEARANCES[pet.appearance].label}</Text>
-          <Text style={{ color: '#87b8c3', fontFamily: TERMINAL_FONT, fontSize: 9 }}>
-            {dead ? 'En souvenir de ton compagnon' : growth?.daysUntilNext === null ? 'Taille adulte atteinte' : `Prochaine évolution : ${growth?.daysUntilNext} j`}
-          </Text>
+          <Text style={{ color: colors.muted, fontFamily: TERMINAL_FONT, fontSize: 10 }}>{growth?.stage.label} · {formatAge(growth?.ageHours ?? 0)} · {APPEARANCES[pet.appearance].label}</Text>
+          {dead ? <Text style={{ color: '#87b8c3', fontFamily: TERMINAL_FONT, fontSize: 9 }}>En souvenir de ton compagnon</Text>
+            : pet.sleeping ? <Text accessibilityLiveRegion="polite" style={{ color: '#9bd8ff', fontFamily: TERMINAL_FONT, fontSize: 9 }}>
+              Réveil automatique dans {formatWakeTime(pet.needs.energy)}
+            </Text> : <View style={{ gap: 4 }}>
+              <Text style={{ color: '#87b8c3', fontFamily: TERMINAL_FONT, fontSize: 9 }}>
+                {growth?.nextStage ? `Prochaine évolution : ${growth.nextStage.label} dans ${growth.daysUntilNext} ${growth.daysUntilNext === 1 ? 'jour' : 'jours'}` : 'Taille adulte atteinte'}
+              </Text>
+              <View accessibilityLabel={`Progression vers la prochaine évolution : ${Math.round((growth?.progress ?? 1) * 100)} %`}
+                accessibilityRole="progressbar" accessibilityValue={{ min: 0, max: 100, now: Math.round((growth?.progress ?? 1) * 100) }}
+                style={{ height: 4, overflow: 'hidden', backgroundColor: '#29434a', borderRadius: 2 }}>
+                <View style={{ width: `${Math.round((growth?.progress ?? 1) * 100)}%`, height: '100%', backgroundColor: colors.accent, borderRadius: 2 }} />
+              </View>
+            </View>}
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, padding: 8,
           backgroundColor: '#09151b', borderRadius: 6, borderWidth: 1, borderColor: '#2d474b' }}>
