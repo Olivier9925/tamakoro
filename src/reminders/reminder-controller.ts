@@ -1,3 +1,5 @@
+import { translate } from '@/i18n/messages';
+
 export type ReminderSettings = { version: 1; enabled: boolean; hour: number; minute: number };
 export type ReminderPermission = 'granted' | 'denied' | 'undetermined' | 'unavailable';
 export type ReminderPet = { name: string; alive: boolean } | null;
@@ -9,7 +11,7 @@ export function parseReminder(raw: string): ReminderSettings {
   if (!value || value.version !== 1 || typeof value.enabled !== 'boolean'
     || !Number.isInteger(value.hour) || value.hour < 0 || value.hour > 23
     || !Number.isInteger(value.minute) || value.minute < 0 || value.minute > 59) {
-    throw new Error('Réglage des rappels illisible. Il est conservé sur cet appareil.');
+    throw new Error(translate('settings.reminderCorrupt'));
   }
   return { version: 1, enabled: value.enabled, hour: value.hour, minute: value.minute };
 }
@@ -49,9 +51,9 @@ export class ReminderController {
       this.publish({ busy: true, error: null, message: null });
       let succeeded = false;
       try { await work(); succeeded = true; }
-      catch (error) {
+    catch (error) {
         if (!this.loaded) await this.deps.platform.cancel().catch(() => {});
-        this.publish({ error: error instanceof Error ? error.message : 'Impossible de régler les rappels. Réessaie.' });
+        this.publish({ error: error instanceof Error ? error.message : translate('settings.reminderError') });
       }
       finally { this.publish({ busy: false, loading: false }); }
       return succeeded;
@@ -90,11 +92,11 @@ export class ReminderController {
     await this.load();
     const next = parseReminder(JSON.stringify(settings));
     const previous = this.state.settings;
-    if (!this.deps.platform.supported) throw new Error('Les rappels sont disponibles dans l’app iOS ou Android.');
+    if (!this.deps.platform.supported) throw new Error(translate('settings.reminderUnsupported'));
     if (next.enabled && !previous.enabled) {
       const permission = await this.deps.platform.permission(true);
       this.publish({ permission });
-      if (permission !== 'granted') throw new Error('Notifications non autorisées. Tu peux les autoriser dans les réglages du téléphone.');
+      if (permission !== 'granted') throw new Error(translate('settings.reminderDenied'));
     }
     try {
       await this.sync(next);
@@ -104,16 +106,16 @@ export class ReminderController {
       try { await this.sync(previous); } catch { await this.deps.platform.cancel().catch(() => {}); }
       throw error;
     }
-    this.publish({ settings: next, message: next.enabled ? `Horaire enregistré : ${reminderTime(next)}.` : 'Rappels désactivés.' });
+    this.publish({ settings: next, message: next.enabled ? translate('settings.timeSaved', { time: reminderTime(next) }) : translate('settings.remindersOff') });
   });
   test = () => this.run(async () => {
     await this.load();
     const permission = await this.deps.platform.permission(false);
     this.publish({ permission });
     if (!this.state.settings.enabled || permission !== 'granted' || !this.state.pet?.alive) {
-      throw new Error('Active les rappels et autorise les notifications pour les tester.');
+      throw new Error(translate('settings.testReminderNeedsSetup'));
     }
     await this.deps.platform.test(this.state.pet.name);
-    this.publish({ message: 'Notification de test prévue dans 5 secondes.' });
+    this.publish({ message: translate('settings.testReminderScheduled') });
   });
 }

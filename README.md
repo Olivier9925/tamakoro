@@ -117,16 +117,17 @@ et [hébergement GitHub Pages](https://docs.github.com/en/pages/getting-started-
 
 ## Organisation de l’application
 
-Le démarrage affiche l’incubateur pixelisé plein écran et le titre central Tamakoro.
-Les SVG et PNG `assets/images/tamakoro-splash*` reprennent les dessins du jeu ;
-`node scripts/generate-splash.cjs` régénère les SVG. Pour les PNG, fournir le chemin
-d’un module Sharp installé avec `SHARP_MODULE=/chemin/vers/sharp` à la même commande.
-Le PNG portrait est rasterisé à 360 × 780 puis agrandi sans lissage.
+Le splash affiche un fond électronique quadrillé, des pistes de circuit imprimé
+et le titre pixelisé Tamakoro dans son cartouche. L’incubateur n’y apparaît plus.
+Les SVG et PNG `assets/images/tamakoro-splash*` réutilisent le fond et le titre
+dessinés dans le jeu ; `node scripts/generate-splash.cjs` les régénère. Pour les PNG,
+fournir le chemin d’un module Sharp installé avec `SHARP_MODULE=/chemin/vers/sharp`
+à la même commande. Le PNG portrait est rasterisé à 360 × 780 puis agrandi sans lissage.
 
 Sur iOS, le plugin `expo-splash-screen` utilise actuellement l’option native
 `enableFullScreenImage_legacy` (à remplacer lorsqu’Expo la retirera). Android affiche
-d’abord le logo sur fond bleu nuit, conformément à son écran système, puis le même
-incubateur plein écran. Le calque React est visible environ 1,1 seconde une fois
+d’abord le cartouche carré sur fond bleu nuit, conformément à son écran système,
+puis le même visuel électronique plein écran. Le calque React est visible environ 1,1 seconde une fois
 l’image chargée ; les routes et la sauvegarde se chargent derrière. Il ne se rejoue
 pas à chaque retour au premier plan. Le mode clair et sombre partagent ce visuel.
 Recompiler après modification du splash natif : `npm run prebuild:ios`, puis
@@ -206,7 +207,7 @@ qui partage le fond, la bordure en relief et la police du cartouche du nom.
 
 Le bouton « ? » de l’en-tête ouvre à tout moment un guide hors ligne, avant
 l’adoption comme pendant la partie ou sur l’écran souvenir. Il explique les effets
-des soins, le réveil manuel, les formes tous les 15 jours jusqu’à 90 jours,
+des soins, le réveil manuel ou automatique à énergie pleine, les formes tous les 15 jours jusqu’à 90 jours,
 les absences et le décès à santé zéro. La route modale `/help` conserve l’écran
 de jeu en place ; « × » ferme l’aide, ou revient à l’accueil si elle a été ouverte
 directement. Le guide défile sur les petits écrans et avec des textes agrandis.
@@ -265,16 +266,37 @@ date du décès ; une nouvelle adoption nécessite une validation explicite avan
 remplacer la partie. Le format v1 et la clé de sauvegarde existants sont conservés :
 une santé à zéro suffit à identifier cet état. Cette règle de mort remplace, à la
 demande du joueur, la protection initiale du MVP contre les pertes irréversibles.
+Les fiches des compagnons décédés sont conservées séparément dans le mémorial local,
+accessible depuis les paramètres. Elles gardent leur apparence, leur stade, leur âge,
+leurs dates et leurs dernières jauges ; les anciennes parties déjà décédées sont
+ajoutées au mémorial au prochain lancement.
 
 Les alertes commencent sous 25 pour satiété, énergie et hygiène, sous 30 pour
 humeur et sous 40 pour santé. Les jauges deviennent rouges sous 20 (sous 10 pour
 énergie), et le cartouche explique les causes de la baisse de santé et les soins.
-Les soins et leurs effets sont expliqués dans l’écran. Le sommeil dure jusqu’au réveil
-manuel. Le temps est calculé à partir de l’horodatage sauvegardé, sans exécution en arrière-plan.
+Les soins et leurs effets sont expliqués dans l’écran. Le sommeil rend 18 points
+d’énergie par heure et se termine automatiquement à 100 ; le joueur peut aussi
+réveiller son Tamakoro plus tôt. Le temps est calculé à partir de l’horodatage
+sauvegardé, sans exécution en arrière-plan.
 Un recul de l’horloge ne fait pas reculer l’état de la créature.
+
+Chaque soin éveillé consomme aussi de l’énergie : nourrir −4, hydrater −3,
+nettoyer −6 et jouer −12. Une action n’est pas exécutée si le Tamakoro n’a pas
+l’énergie nécessaire ; dormir recharge la jauge à raison de 18 points par heure.
 
 Après l’ajout d’AsyncStorage, un ancien development build doit être recompilé pour
 inclure le module natif. Expo Go compatible avec le SDK inclut ce module.
 
 Notion reste la source de vérité pour le périmètre et les priorités :
 [Tamakoro — User Stories](https://app.notion.com/p/22d40c7828eb4307a0d5d07c3f851079?pvs=21).
+
+### Langues
+
+L’interface est disponible en français et en anglais. Le mode automatique utilise
+la première langue du téléphone : français si son code est `fr`, anglais pour toute
+autre langue. Le choix automatique ou manuel est enregistré localement sous
+`tamakoro.language.v1`. Le changement de langue s’applique immédiatement aux écrans,
+aux messages du jeu et aux rappels locaux ; aucune traduction distante n’est utilisée.
+`expo-localization` fournit la langue du téléphone. Après son ajout, reconstruire le
+client natif avec `npm run ios` ou `npm run android` avant d’utiliser cette version
+dans un development build existant.

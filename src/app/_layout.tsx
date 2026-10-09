@@ -7,6 +7,7 @@ import { AppHeader } from '@/components/app-header';
 import { StartupSplash } from '@/components/startup-splash';
 import { reminders } from '@/reminders/reminders';
 import { observeReminderTap } from '@/reminders/reminder-platform';
+import { I18nProvider } from '@/i18n/provider';
 
 export default function RootLayout() {
   const [starting, setStarting] = useState(true);
@@ -20,17 +21,18 @@ export default function RootLayout() {
     return () => { subscription.remove(); stop(); };
   }, []);
   return (
-    <View style={{ flex: 1, backgroundColor: '#090f18' }}>
+    <I18nProvider><View style={{ flex: 1, backgroundColor: '#090f18' }}>
       <StatusBar style="light" />
       <View style={{ flex: 1 }} accessibilityElementsHidden={starting} aria-hidden={starting}
         importantForAccessibility={starting ? 'no-hide-descendants' : 'auto'}>
-        <Stack screenOptions={{ header: ({ route }) => <AppHeader panel={route.name === 'help' || route.name === 'settings' ? route.name : undefined} />, contentStyle: { backgroundColor: '#090f18' } }}>
+        <Stack screenOptions={{ header: ({ route }) => <AppHeader panel={route.name === 'help' || route.name === 'settings' || route.name === 'memorial' ? route.name : undefined} />, contentStyle: { backgroundColor: '#090f18' } }}>
           <Stack.Screen name="index" options={{ title: 'Tamakoro' }} />
           <Stack.Screen name="help" options={{ title: 'Aide Tamakoro', presentation: 'modal' }} />
           <Stack.Screen name="settings" options={{ title: 'Paramètres Tamakoro', presentation: 'modal' }} />
+          <Stack.Screen name="memorial" options={{ title: 'Mémorial Tamakoro', presentation: 'modal' }} />
         </Stack>
       </View>
       {starting && <StartupSplash onFinished={finishStartup} />}
-    </View>
+    </View></I18nProvider>
   );
 }

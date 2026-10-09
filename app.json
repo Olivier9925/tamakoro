@@ -25,7 +25,13 @@
     },
     "plugins": [
       "expo-router",
-      ["expo-notifications", { "color": "#a9d875", "defaultChannel": "tamakoro-reminders" }],
+      [
+        "expo-notifications",
+        {
+          "color": "#a9d875",
+          "defaultChannel": "tamakoro-reminders"
+        }
+      ],
       [
         "expo-splash-screen",
         {
@@ -38,7 +44,8 @@
             "resizeMode": "cover"
           }
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "extra": {
       "eas": {

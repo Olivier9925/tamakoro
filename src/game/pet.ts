@@ -1,7 +1,12 @@
+import { translate } from '@/i18n/messages';
+
 export const NEEDS = ['food', 'energy', 'hygiene', 'mood', 'health'] as const;
 export type Need = (typeof NEEDS)[number];
 export type Appearance = 'leaf' | 'ember' | 'water';
 export type Action = 'feed' | 'hydrate' | 'clean' | 'play' | 'sleep';
+export const ACTION_ENERGY_COST: Record<Exclude<Action, 'sleep'>, number> = {
+  feed: 4, hydrate: 3, clean: 6, play: 12,
+};
 export type Pet = {
   version: 1;
   name: string;
@@ -29,7 +34,7 @@ export function petGrowth(pet: Pick<Pet, 'createdAt' | 'updatedAt' | 'needs'>, n
   const stageIndex = Math.min(6, Math.floor(age / (15 * DAY)));
   const stage = GROWTH_STAGES[stageIndex];
   const next = GROWTH_STAGES[stageIndex + 1];
-  return { stageIndex, stage, ageDays: Math.floor(age / DAY),
+  return { stageIndex, stage, ageDays: Math.floor(age / DAY), ageHours: Math.floor(age / HOUR), nextStage: next ?? null,
     daysUntilNext: next ? Math.ceil((next.day * DAY - age) / DAY) : null,
     progress: next ? (age / DAY - stage.day) / 15 : 1 };
 }
@@ -43,26 +48,26 @@ export function needSeverity(key: Need, value: number): 'normal' | 'warning' | '
 export function isPetDead(pet: Pet) { return pet.needs.health === 0; }
 
 export function petHealthAlert(pet: Pet) {
-  if (isPetDead(pet)) return `${pet.name} est décédé. Les soins et la croissance sont arrêtés.`;
-  const causes = [pet.needs.food < 20 ? 'satiété' : null,
-    pet.needs.hygiene < 20 ? 'hygiène' : null, pet.needs.mood < 20 ? 'humeur' : null].filter(Boolean);
-  if (causes.length) return `${pet.needs.health < 20 ? 'Danger de mort. ' : ''}Santé −2/h : ${causes.join(', ')} sous 20. Nourrir, nettoyer ou jouer permet de corriger ces besoins ; hydrater rend 5 points de santé.`;
-  if (pet.needs.health < 40) return 'Santé fragile. Elle remonte de 1/h lorsque satiété, hygiène et humeur restent à 20 ou plus. Hydrater rend 5 points.';
+  if (isPetDead(pet)) return translate('home.healthDead', { name: pet.name });
+  const causes = [pet.needs.food < 20 ? translate('need.food') : null,
+    pet.needs.hygiene < 20 ? translate('need.hygiene') : null, pet.needs.mood < 20 ? translate('need.mood') : null].filter(Boolean);
+  if (causes.length) return `${pet.needs.health < 20 ? translate('home.healthDangerPrefix') : ''}${translate('home.healthCauses', { causes: causes.join(', ') })}`;
+  if (pet.needs.health < 40) return translate('home.healthFragile');
   return null;
 }
 
 export function createPet(name: string, appearance: Appearance, now: number): Pet {
   const trimmed = name.trim();
-  if (!trimmed || trimmed.length > 20) throw new Error('Choisis un nom de 1 à 20 caractères.');
+  if (!trimmed || trimmed.length > 20) throw new Error(translate('validation.name'));
   return { version: 1, name: trimmed, appearance, createdAt: now, updatedAt: now,
     sleeping: false, needs: { food: 85, energy: 90, hygiene: 85, mood: 90, health: 100 } };
 }
 
-// Rates per hour. Segmenting at care thresholds keeps health independent of refresh frequency.
-export function advancePet(pet: Pet, now: number): Pet {
-  if (isPetDead(pet) || now <= pet.updatedAt) return pet;
-  const hours = (now - pet.updatedAt) / HOUR;
-  const rates = { food: -4, energy: pet.sleeping ? 18 : -3, hygiene: -2, mood: pet.sleeping ? -1 : -2 };
+// Apply one interval with fixed sleep state. Threshold segmentation keeps health
+// independent of refresh frequency and lets advancePet split at the wake instant.
+function advanceInterval(pet: Pet, hours: number, sleeping: boolean, endAt: number): Pet {
+  if (hours <= 0 || isPetDead(pet)) return pet;
+  const rates = { food: -4, energy: sleeping ? 18 : -3, hygiene: -2, mood: sleeping ? -1 : -2 };
   const needs = { ...pet.needs };
   const breaks = [0, hours];
   let elapsed = hours;
@@ -87,8 +92,28 @@ export function advancePet(pet: Pet, now: number): Pet {
   for (const key of ['food', 'energy', 'hygiene', 'mood'] as const) {
     needs[key] = clamp(needs[key] + rates[key] * elapsed);
   }
-  return { ...pet, updatedAt: elapsed === hours ? now : pet.updatedAt + elapsed * HOUR,
-    sleeping: needs.health === 0 ? false : pet.sleeping, needs };
+  return { ...pet, updatedAt: elapsed === hours ? endAt : pet.updatedAt + elapsed * HOUR,
+    sleeping: needs.health === 0 ? false : sleeping, needs };
+}
+
+// Energy recovers during sleep until it reaches 100, then awake rates resume.
+// Splitting at the exact wake instant also handles app closures and long absences.
+export function advancePet(pet: Pet, now: number): Pet {
+  if (isPetDead(pet) || now < pet.updatedAt) return pet;
+  if (!pet.sleeping) {
+    if (now === pet.updatedAt) return pet;
+    return advanceInterval(pet, (now - pet.updatedAt) / HOUR, false, now);
+  }
+
+  const hours = (now - pet.updatedAt) / HOUR;
+  const hoursUntilWake = Math.max(0, (100 - pet.needs.energy) / 18);
+  if (hours < hoursUntilWake) return advanceInterval(pet, hours, true, now);
+
+  const wakeAt = pet.updatedAt + hoursUntilWake * HOUR;
+  const slept = advanceInterval(pet, hoursUntilWake, true, wakeAt);
+  if (isPetDead(slept)) return slept;
+  const awake = { ...slept, sleeping: false, needs: { ...slept.needs, energy: 100 } };
+  return advanceInterval(awake, hours - hoursUntilWake, false, now);
 }
 
 export function careForPet(pet: Pet, action: Action, now: number): Pet {
@@ -96,25 +121,27 @@ export function careForPet(pet: Pet, action: Action, now: number): Pet {
   if (isPetDead(next)) return next;
   if (action === 'sleep') return { ...next, sleeping: !next.sleeping };
   if (next.sleeping) return next;
+  if (next.needs.energy < ACTION_ENERGY_COST[action]) return next;
   const needs = { ...next.needs };
+  needs.energy -= ACTION_ENERGY_COST[action];
   if (action === 'feed') { needs.food += 25; needs.mood += 3; }
   if (action === 'hydrate') { needs.food += 8; needs.health += 5; }
   if (action === 'clean') { needs.hygiene += 35; needs.mood += 5; }
-  if (action === 'play') { needs.mood += 25; needs.energy -= 8; needs.food -= 4; }
+  if (action === 'play') { needs.mood += 25; needs.food -= 4; }
   for (const key of NEEDS) needs[key] = clamp(needs[key]);
   return { ...next, needs };
 }
 
 export function petMood(pet: Pet) {
-  if (isPetDead(pet)) return 'Décédé';
-  if (pet.needs.health < 20) return 'Danger de mort';
-  if (pet.needs.health < NEED_WARNING.health) return 'Besoin de soins';
-  if (pet.sleeping) return 'Endormi';
-  if (pet.needs.food < NEED_WARNING.food) return 'Un petit creux';
-  if (pet.needs.energy < NEED_WARNING.energy) return 'Fatigué';
-  if (pet.needs.hygiene < NEED_WARNING.hygiene) return 'Besoin d’un bain';
-  if (pet.needs.mood < NEED_WARNING.mood) return 'Envie de jouer';
-  return 'Heureux';
+  if (isPetDead(pet)) return translate('home.deceased');
+  if (pet.needs.health < 20) return translate('home.danger');
+  if (pet.needs.health < NEED_WARNING.health) return translate('home.needsCare');
+  if (pet.sleeping) return translate('home.sleeping');
+  if (pet.needs.food < NEED_WARNING.food) return translate('home.hungry');
+  if (pet.needs.energy < NEED_WARNING.energy) return translate('home.tired');
+  if (pet.needs.hygiene < NEED_WARNING.hygiene) return translate('home.needsBath');
+  if (pet.needs.mood < NEED_WARNING.mood) return translate('home.wantsPlay');
+  return translate('home.happy');
 }
 
 export function parsePet(raw: string): Pet {
@@ -124,7 +151,7 @@ export function parsePet(raw: string): Pet {
     || typeof value.sleeping !== 'boolean' || !Number.isFinite(value.createdAt)
     || !Number.isFinite(value.updatedAt) || value.createdAt < 0 || value.updatedAt < value.createdAt
     || !NEEDS.every(key => Number.isFinite(value.needs?.[key]) && value.needs[key] >= 0 && value.needs[key] <= 100)) {
-    throw new Error('La sauvegarde ne peut pas être lue. Elle est conservée sur cet appareil.');
+    throw new Error(translate('save.unreadable'));
   }
   return value as Pet;
 }

@@ -6,8 +6,10 @@ import { IncubatorEffects } from '@/components/incubator-effects';
 import { PixelPet } from '@/components/pixel-pet';
 import { SPRITE_SIZE } from '@/components/pet-sprite-art';
 import type { Appearance } from '@/game/pet';
+import { useI18n } from '@/i18n/provider';
 
 export function IncubatorScene({ appearance, stageIndex = 0, sleeping = false, dead = false, height, action = null }: { appearance: Appearance; stageIndex?: number; sleeping?: boolean; dead?: boolean; height?: number; action?: string | null }) {
+  const { t } = useI18n();
   const [width, setWidth] = useState(320);
   const [actionName, actionKey] = action?.split('-') ?? [];
   const reaction = actionName === 'feed' || actionName === 'hydrate' || actionName === 'play' || actionName === 'clean' ? actionName : null;
@@ -22,11 +24,11 @@ export function IncubatorScene({ appearance, stageIndex = 0, sleeping = false, d
     <View style={{ position: 'absolute', top: '18.5%', height: '6.25%', left: '25%', right: '25%',
       alignItems: 'center', justifyContent: 'center' }}>
       <Text numberOfLines={1} maxFontSizeMultiplier={1.2}
-        style={{ color: '#d8e3e9', fontSize: 9, fontWeight: '700', letterSpacing: 1.5 }}>CŒUR D’INCUBATION</Text>
+        style={{ color: '#d8e3e9', fontSize: 9, fontWeight: '700', letterSpacing: 1.5 }}>{t('incubator.label')}</Text>
     </View>
     <View style={{ position: 'absolute', top: '36%', bottom: '21%', left: '20%', right: '20%',
       justifyContent: 'flex-end', alignItems: 'center' }}>
-      {dead ? <Text accessibilityLabel="Incubateur vide, en souvenir du Tamakoro"
+      {dead ? <Text accessibilityLabel={t('incubator.empty')}
         style={{ color: '#a3bcc0', fontSize: 18, paddingBottom: 12 }}>✦</Text> :
         <PixelPet appearance={appearance} stageIndex={stageIndex} sleeping={sleeping}
           action={reaction}

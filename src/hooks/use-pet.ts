@@ -1,17 +1,28 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
-import { advancePet, careForPet, createPet, isPetDead, petGrowth, petHealthAlert, type Action, type Appearance, type Pet } from '@/game/pet';
-import { loadPet, savePet } from '@/game/storage';
+import { ACTION_ENERGY_COST, advancePet, careForPet, createPet, isPetDead, NEEDS, petGrowth, petHealthAlert, type Action, type Appearance, type Need, type Pet } from '@/game/pet';
+import { archivePet, loadPet, loadPetRecords, savePet, type PetRecord } from '@/game/storage';
 import { reminders } from '@/reminders/reminders';
+import { stageLabel, translate } from '@/i18n/messages';
+import { useI18n } from '@/i18n/provider';
 
 function growthNotice(previous: Pet, next: Pet) {
   if (isPetDead(next)) return isPetDead(previous) ? null : petHealthAlert(next);
   const before = petGrowth(previous, previous.updatedAt);
   const after = petGrowth(next, next.updatedAt);
-  return after.stageIndex > before.stageIndex ? `${next.name} a évolué : ${after.stage.label} !` : null;
+  return after.stageIndex > before.stageIndex ? translate('care.evolved', { name: next.name, stage: stageLabel(after.stageIndex) }) : null;
+}
+
+function elapsedNotice(previous: Pet, next: Pet) {
+  const notices = [growthNotice(previous, next)];
+  if (!isPetDead(next) && previous.sleeping && !next.sleeping) {
+    notices.push(translate('care.autoWake', { name: next.name }));
+  }
+  return notices.filter(Boolean).join(' ') || null;
 }
 
 export function usePet() {
+  const { language } = useI18n();
   const [pet, setPet] = useState<Pet | null>(null);
   const current = useRef<Pet | null>(null);
   const [loading, setLoading] = useState(true);
@@ -19,8 +30,12 @@ export function usePet() {
   const [busy, setBusy] = useState(false);
   const locked = useRef(false);
   const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState('Chaque petit soin compte.');
+  const [messageState, setMessageState] = useState(() => ({ language, text: translate('care.generic') }));
+  const setMessage = useCallback((text: string) => setMessageState({ language, text }), [language]);
+  const message = messageState.language === language ? messageState.text : translate('care.generic');
   const [saveFailed, setSaveFailed] = useState(false);
+  const [petRecords, setPetRecords] = useState<PetRecord[]>([]);
+  const [historyError, setHistoryError] = useState<string | null>(null);
   const queue = useRef<Promise<void>>(Promise.resolve());
   const petName = pet?.name;
   const petDead = pet ? isPetDead(pet) : false;
@@ -28,38 +43,59 @@ export function usePet() {
     if (!loading && !loadFailed) void reminders.setPet(petName ? { name: petName, alive: !petDead } : null);
   }, [petName, petDead, loading, loadFailed]);
 
-  const persist = useCallback((value: Pet) => {
+  const persist = useCallback((value: Pet, archive = false) => {
     // Serialize writes so an older snapshot cannot overwrite a newer action.
-    const write = queue.current.catch(() => {}).then(() => savePet(value));
+    const write = queue.current.catch(() => {}).then(async () => {
+      await savePet(value);
+      if (archive) {
+        await archivePet(value);
+        const records = await loadPetRecords();
+        setPetRecords(records);
+        setHistoryError(null);
+      }
+    });
     queue.current = write;
     return write;
   }, []);
   const load = useCallback(() => {
-    return loadPet().then(saved => {
+    return loadPet().then(async saved => {
       const value = saved ? advancePet(saved, Date.now()) : null;
+      try {
+        setPetRecords(await loadPetRecords());
+        setHistoryError(null);
+      } catch (cause) {
+        setHistoryError(cause instanceof Error ? cause.message : translate('memorial.readError'));
+      }
       if (saved && value) {
-        const notice = growthNotice(saved, value);
+        const notice = elapsedNotice(saved, value);
         if (notice) setMessage(notice);
       }
       current.current = value; setPet(value); setLoadFailed(false);
-      if (value && isPetDead(value) && saved && !isPetDead(saved)) {
-        void persist(value).then(() => setSaveFailed(false), () => setSaveFailed(true));
+      if (value && saved && (isPetDead(value) || (saved.sleeping && !value.sleeping))) {
+        void persist(value, isPetDead(value)).then(() => setSaveFailed(false), cause => {
+          setSaveFailed(true);
+          if (isPetDead(value)) setHistoryError(cause instanceof Error ? cause.message : 'Archivage impossible.');
+        });
       }
     }).catch(cause => {
       setLoadFailed(true);
-      setError(cause instanceof Error ? cause.message : 'Impossible de lire la partie. Réessaie.');
+      setError(cause instanceof Error ? cause.message : translate('save.unreadable'));
     }).finally(() => setLoading(false));
-  }, [persist]);
+  }, [persist, setMessage]);
   useEffect(() => { void load(); }, [load]);
   useEffect(() => {
     const refresh = () => {
       if (!current.current || locked.current) return;
-      const value = advancePet(current.current, Date.now());
-      const notice = growthNotice(current.current, value);
+      const previous = current.current;
+      const value = advancePet(previous, Date.now());
+      const notice = elapsedNotice(previous, value);
       if (notice) setMessage(notice);
       current.current = value; setPet(value);
-      if (isPetDead(value) && notice) {
-        void persist(value).then(() => setSaveFailed(false), () => setSaveFailed(true));
+      if ((isPetDead(value) && notice) || (previous.sleeping && !value.sleeping)) {
+        void persist(value, isPetDead(value)).then(() => setSaveFailed(false), cause => {
+          setSaveFailed(true);
+          if (isPetDead(value)) setHistoryError(cause instanceof Error ? cause.message : 'Archivage impossible.');
+        });
       }
     };
     const timer = setInterval(() => { if (AppState.currentState === 'active') refresh(); }, 30_000);
@@ -70,45 +106,61 @@ export function usePet() {
       }
     });
     return () => { clearInterval(timer); subscription.remove(); };
-  }, [persist]);
+  }, [persist, setMessage]);
   const adopt = async (name: string, appearance: Appearance) => {
     if (locked.current || loadFailed || (current.current && !isPetDead(current.current))) return false;
     locked.current = true; setBusy(true); setError(null);
     try {
+      if (current.current && isPetDead(current.current)) await persist(current.current, true);
       const value = createPet(name, appearance, Date.now());
       await persist(value);
-      current.current = value; setPet(value); setSaveFailed(false); setMessage(`Bienvenue, ${value.name} !`);
+      current.current = value; setPet(value); setSaveFailed(false); setMessage(translate('care.welcome', { name: value.name }));
       return true;
-    } catch { setError('Adoption non sauvegardée. Réessaie.'); return false; }
+    } catch { setError(translate('home.saveFailure')); return false; }
     finally { locked.current = false; setBusy(false); }
   };
-  const care = async (action: Action) => {
+  const care = async (action: Action, onApplied?: (deltas: Partial<Record<Need, number>>) => void) => {
     if (!current.current || locked.current || isPetDead(current.current)) return;
     if (current.current.sleeping && action !== 'sleep') return;
     locked.current = true; setBusy(true);
     const previous = current.current;
-    const value = careForPet(previous, action, Date.now());
+    const now = Date.now();
+    const evaluated = advancePet(previous, now);
+    const value = careForPet(previous, action, now);
     current.current = value; setPet(value);
     const messages: Record<Action, string> = {
-      feed: 'Repas servi : satiété +25, humeur +3.',
-      hydrate: 'Une gorgée : satiété +8, santé +5.',
-      clean: 'Tout propre : hygiène +35, humeur +5.',
-      play: 'Un bon moment : humeur +25, énergie −8, satiété −4.',
-      sleep: value.sleeping ? 'Au repos : énergie +18 par heure. Les autres besoins continuent d’évoluer.' : 'Bien réveillé ! Les soins sont disponibles.',
+      feed: translate('care.feed'),
+      hydrate: translate('care.hydrate'),
+      clean: translate('care.clean'),
+      play: translate('care.play'),
+      sleep: value.sleeping ? translate('care.sleep') : translate('care.wake'),
     };
     const notice = growthNotice(previous, value);
-    setMessage(isPetDead(value) ? petHealthAlert(value)! : notice ? `${notice} ${messages[action]}` : `${messages[action]} Les jauges restent entre 0 et 100.`);
-    try { await persist(value); setSaveFailed(false); }
-    catch { setSaveFailed(true); }
+    const insufficientEnergy = action !== 'sleep' && evaluated.needs.energy < ACTION_ENERGY_COST[action];
+    if (!isPetDead(value) && !insufficientEnergy && action !== 'sleep') {
+      const deltas = Object.fromEntries(NEEDS.map(key => [key, value.needs[key] - evaluated.needs[key]])
+        .filter(([, delta]) => delta !== 0)) as Partial<Record<Need, number>>;
+      onApplied?.(deltas);
+    }
+    setMessage(isPetDead(value) ? petHealthAlert(value)! : insufficientEnergy ? translate('care.lowEnergy')
+      : notice ? `${notice} ${messages[action]}` : `${messages[action]}${translate('care.clamped')}`);
+    try { await persist(value, isPetDead(value)); setSaveFailed(false); }
+    catch (cause) {
+      setSaveFailed(true);
+      if (isPetDead(value)) setHistoryError(cause instanceof Error ? cause.message : 'Archivage impossible.');
+    }
     finally { locked.current = false; setBusy(false); }
   };
   const retrySave = async () => {
     if (!current.current || locked.current) return;
     locked.current = true; setBusy(true);
-    try { await persist(current.current); setSaveFailed(false); }
-    catch { setSaveFailed(true); }
+    try { await persist(current.current, isPetDead(current.current)); setSaveFailed(false); }
+    catch (cause) {
+      setSaveFailed(true);
+      if (isPetDead(current.current)) setHistoryError(cause instanceof Error ? cause.message : 'Archivage impossible.');
+    }
     finally { locked.current = false; setBusy(false); }
   };
   const retryLoad = () => { setLoading(true); setError(null); void load(); };
-  return { pet, loading, loadFailed, busy, error, message, saveFailed, load: retryLoad, adopt, care, retrySave };
+  return { pet, petRecords, historyError, loading, loadFailed, busy, error, message, saveFailed, load: retryLoad, adopt, care, retrySave };
 }

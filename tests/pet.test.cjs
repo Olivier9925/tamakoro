@@ -41,12 +41,24 @@ test('sleep recovers energy while other needs evolve; wake resumes care', () => 
 test('care affects the right needs and never exceeds bounds', () => {
   const pet = { ...initial(), needs: { food: 40, energy: 5, hygiene: 40, mood: 40, health: 40 } };
   assert.equal(careForPet(pet, 'feed', birth).needs.food, 65);
+  assert.equal(careForPet(pet, 'feed', birth).needs.energy, 1);
   assert.equal(careForPet(pet, 'hydrate', birth).needs.health, 45);
+  assert.equal(careForPet(pet, 'hydrate', birth).needs.energy, 2);
   assert.equal(careForPet(pet, 'clean', birth).needs.hygiene, 75);
+  assert.equal(careForPet(pet, 'clean', birth).needs.energy, 0);
   const played = careForPet(pet, 'play', birth);
   assert.equal(played.needs.mood, 65);
-  assert.equal(played.needs.energy, 0);
+  assert.equal(played.needs.energy, 5);
+  assert.equal(played.needs.mood, 40);
   assert.equal(careForPet(initial(), 'feed', birth).needs.food, 100);
+  assert.equal(careForPet(initial(), 'feed', birth).needs.energy, 86);
+});
+test('care actions require their energy cost; sleeping restores energy to use them', () => {
+  const exhausted = { ...initial(), needs: { ...initial().needs, energy: 2 } };
+  assert.deepEqual(careForPet(exhausted, 'feed', birth), exhausted);
+  const rested = advancePet({ ...exhausted, sleeping: true }, birth + HOUR);
+  assert.equal(rested.needs.energy, 38);
+  assert.equal(careForPet(rested, 'feed', rested.updatedAt).needs.energy, 34);
 });
 test('clock rollback does not reverse progression or duplicate elapsed time', () => {
   const pet = advancePet(initial(), birth + HOUR);
