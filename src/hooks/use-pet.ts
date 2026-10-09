@@ -3,23 +3,26 @@ import { AppState } from 'react-native';
 import { advancePet, careForPet, createPet, isPetDead, petGrowth, petHealthAlert, type Action, type Appearance, type Pet } from '@/game/pet';
 import { archivePet, loadPet, loadPetRecords, savePet, type PetRecord } from '@/game/storage';
 import { reminders } from '@/reminders/reminders';
+import { stageLabel, translate } from '@/i18n/messages';
+import { useI18n } from '@/i18n/provider';
 
 function growthNotice(previous: Pet, next: Pet) {
   if (isPetDead(next)) return isPetDead(previous) ? null : petHealthAlert(next);
   const before = petGrowth(previous, previous.updatedAt);
   const after = petGrowth(next, next.updatedAt);
-  return after.stageIndex > before.stageIndex ? `${next.name} a évolué : ${after.stage.label} !` : null;
+  return after.stageIndex > before.stageIndex ? translate('care.evolved', { name: next.name, stage: stageLabel(after.stageIndex) }) : null;
 }
 
 function elapsedNotice(previous: Pet, next: Pet) {
   const notices = [growthNotice(previous, next)];
   if (!isPetDead(next) && previous.sleeping && !next.sleeping) {
-    notices.push(`${next.name} s’est réveillé automatiquement après avoir récupéré toute son énergie.`);
+    notices.push(translate('care.autoWake', { name: next.name }));
   }
   return notices.filter(Boolean).join(' ') || null;
 }
 
 export function usePet() {
+  const { language } = useI18n();
   const [pet, setPet] = useState<Pet | null>(null);
   const current = useRef<Pet | null>(null);
   const [loading, setLoading] = useState(true);
@@ -27,7 +30,9 @@ export function usePet() {
   const [busy, setBusy] = useState(false);
   const locked = useRef(false);
   const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState('Chaque petit soin compte.');
+  const [messageState, setMessageState] = useState(() => ({ language, text: translate('care.generic') }));
+  const setMessage = useCallback((text: string) => setMessageState({ language, text }), [language]);
+  const message = messageState.language === language ? messageState.text : translate('care.generic');
   const [saveFailed, setSaveFailed] = useState(false);
   const [petRecords, setPetRecords] = useState<PetRecord[]>([]);
   const [historyError, setHistoryError] = useState<string | null>(null);
@@ -59,7 +64,7 @@ export function usePet() {
         setPetRecords(await loadPetRecords());
         setHistoryError(null);
       } catch (cause) {
-        setHistoryError(cause instanceof Error ? cause.message : 'Impossible de lire le mémorial.');
+        setHistoryError(cause instanceof Error ? cause.message : translate('memorial.readError'));
       }
       if (saved && value) {
         const notice = elapsedNotice(saved, value);
@@ -74,9 +79,9 @@ export function usePet() {
       }
     }).catch(cause => {
       setLoadFailed(true);
-      setError(cause instanceof Error ? cause.message : 'Impossible de lire la partie. Réessaie.');
+      setError(cause instanceof Error ? cause.message : translate('save.unreadable'));
     }).finally(() => setLoading(false));
-  }, [persist]);
+  }, [persist, setMessage]);
   useEffect(() => { void load(); }, [load]);
   useEffect(() => {
     const refresh = () => {
@@ -101,7 +106,7 @@ export function usePet() {
       }
     });
     return () => { clearInterval(timer); subscription.remove(); };
-  }, [persist]);
+  }, [persist, setMessage]);
   const adopt = async (name: string, appearance: Appearance) => {
     if (locked.current || loadFailed || (current.current && !isPetDead(current.current))) return false;
     locked.current = true; setBusy(true); setError(null);
@@ -109,9 +114,9 @@ export function usePet() {
       if (current.current && isPetDead(current.current)) await persist(current.current, true);
       const value = createPet(name, appearance, Date.now());
       await persist(value);
-      current.current = value; setPet(value); setSaveFailed(false); setMessage(`Bienvenue, ${value.name} !`);
+      current.current = value; setPet(value); setSaveFailed(false); setMessage(translate('care.welcome', { name: value.name }));
       return true;
-    } catch { setError('Adoption non sauvegardée. Réessaie.'); return false; }
+    } catch { setError(translate('home.saveFailure')); return false; }
     finally { locked.current = false; setBusy(false); }
   };
   const care = async (action: Action) => {
@@ -122,14 +127,14 @@ export function usePet() {
     const value = careForPet(previous, action, Date.now());
     current.current = value; setPet(value);
     const messages: Record<Action, string> = {
-      feed: 'Repas servi : satiété +25, humeur +3.',
-      hydrate: 'Une gorgée : satiété +8, santé +5.',
-      clean: 'Tout propre : hygiène +35, humeur +5.',
-      play: 'Un bon moment : humeur +25, énergie −8, satiété −4.',
-      sleep: value.sleeping ? 'Au repos : +18 énergie par heure, réveil automatique à 100. Les autres besoins continuent d’évoluer.' : 'Bien réveillé ! Les soins sont disponibles.',
+      feed: translate('care.feed'),
+      hydrate: translate('care.hydrate'),
+      clean: translate('care.clean'),
+      play: translate('care.play'),
+      sleep: value.sleeping ? translate('care.sleep') : translate('care.wake'),
     };
     const notice = growthNotice(previous, value);
-    setMessage(isPetDead(value) ? petHealthAlert(value)! : notice ? `${notice} ${messages[action]}` : `${messages[action]} Les jauges restent entre 0 et 100.`);
+    setMessage(isPetDead(value) ? petHealthAlert(value)! : notice ? `${notice} ${messages[action]}` : `${messages[action]}${translate('care.clamped')}`);
     try { await persist(value, isPetDead(value)); setSaveFailed(false); }
     catch (cause) {
       setSaveFailed(true);

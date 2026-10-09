@@ -4,6 +4,7 @@ import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TERMINAL_FONT, WORDMARK_SOURCE } from '@/components/digital-art';
 import { svgSource } from '@/utils/svg-source';
+import { useI18n } from '@/i18n/provider';
 
 const GEAR_SOURCE = svgSource(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
   <g fill="#d4fbb5">${Array.from({ length: 8 }, (_, i) =>
@@ -34,6 +35,7 @@ function Screw() {
 
 export function AppHeader({ panel }: { panel?: 'help' | 'settings' | 'memorial' }) {
   const insets = useSafeAreaInsets();
+  const { t } = useI18n();
   return <View style={{ paddingTop: insets.top, backgroundColor: '#0b131c',
     borderBottomWidth: 1, borderBottomColor: '#263b46' }}>
     <View style={{ width: '100%', maxWidth: 560, alignSelf: 'center', paddingHorizontal: 14,
@@ -43,17 +45,17 @@ export function AppHeader({ panel }: { panel?: 'help' | 'settings' | 'memorial' 
         paddingVertical: 7, backgroundColor: '#101d27', boxShadow: 'inset 0 1px 0 #65748055, 0 3px 0 #03080d' }}>
         {panel ? <View accessible={false} importantForAccessibility="no-hide-descendants"
           style={{ width: 44, alignItems: 'center', gap: 22 }}><Screw /><Screw /></View>
-          : <Link href="/settings" asChild>{headerKey('Ouvrir les paramètres', 'gear')}</Link>}
-        <View accessible accessibilityRole="header" accessibilityLabel="Tamakoro, compagnon virtuel"
+          : <Link href="/settings" asChild>{headerKey(t('header.openSettings'), 'gear')}</Link>}
+        <View accessible accessibilityRole="header" accessibilityLabel={t('header.accessibility')}
           style={{ flex: 1, alignItems: 'center', gap: 4 }}>
           <Image source={WORDMARK_SOURCE} accessible={false} contentFit="contain"
             style={{ width: 188, maxWidth: '100%', height: 30 }} />
           <Text accessible={false} style={{ color: '#91abb7', fontFamily: TERMINAL_FONT,
-            fontSize: 8, letterSpacing: 2 }}>COMPAGNON VIRTUEL</Text>
+            fontSize: 8, letterSpacing: 2 }}>{t('header.companion')}</Text>
         </View>
-        {panel ? headerKey(panel === 'help' ? 'Fermer l’aide' : panel === 'settings' ? 'Fermer les paramètres' : 'Fermer le mémorial', '×',
+        {panel ? headerKey(t(panel === 'help' ? 'header.closeHelp' : panel === 'settings' ? 'header.closeSettings' : 'header.closeMemorial'), '×',
           () => { if (router.canGoBack()) router.back(); else router.replace('/'); })
-          : <Link href="/help" asChild>{headerKey('Ouvrir l’aide', '?')}</Link>}
+          : <Link href="/help" asChild>{headerKey(t('header.openHelp'), '?')}</Link>}
       </View>
     </View>
   </View>;

@@ -1,9 +1,10 @@
 import { Image } from 'expo-image';
 import { View, type ViewStyle } from 'react-native';
 import Animated, { steps, type CSSAnimationKeyframes } from 'react-native-reanimated';
-import { APPEARANCES, petSprites, SPRITE_SIZE } from '@/components/pet-sprite-art';
-import { GROWTH_STAGES, type Appearance } from '@/game/pet';
+import { petSprites, SPRITE_SIZE } from '@/components/pet-sprite-art';
+import type { Appearance } from '@/game/pet';
 import { useAnimationPolicy } from '@/hooks/use-animation-policy';
+import { appearanceLabel, stageLabel, translate } from '@/i18n/messages';
 
 export { APPEARANCES } from '@/components/pet-sprite-art';
 
@@ -35,7 +36,7 @@ export function PixelPet({ appearance, stageIndex = 0, sleeping = false, small =
   const sources = petSprites(appearance, stageIndex, action)[sleeping ? 'asleep' : 'awake'];
   const keyframes = sleeping ? sleepAnimations : action ? animations(sources.length, actionTimelines[action]) : awakeAnimations;
   const animate = !small && !reducedMotion;
-  return <View accessible accessibilityLabel={`Tamakoro ${APPEARANCES[appearance].label}, ${GROWTH_STAGES[stageIndex].label}${sleeping ? ', endormi' : ''}`}
+  return <View accessible accessibilityLabel={`Tamakoro ${appearanceLabel(appearance)}, ${stageLabel(stageIndex)}${sleeping ? `, ${translate('home.sleeping').toLowerCase()}` : ''}`}
     style={{ width: size * SPRITE_SIZE, height: size * SPRITE_SIZE }}>
     <View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
       style={{ position: 'absolute', inset: 0 }}>

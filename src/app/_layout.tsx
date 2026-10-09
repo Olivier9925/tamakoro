@@ -7,6 +7,7 @@ import { AppHeader } from '@/components/app-header';
 import { StartupSplash } from '@/components/startup-splash';
 import { reminders } from '@/reminders/reminders';
 import { observeReminderTap } from '@/reminders/reminder-platform';
+import { I18nProvider } from '@/i18n/provider';
 
 export default function RootLayout() {
   const [starting, setStarting] = useState(true);
@@ -20,7 +21,7 @@ export default function RootLayout() {
     return () => { subscription.remove(); stop(); };
   }, []);
   return (
-    <View style={{ flex: 1, backgroundColor: '#090f18' }}>
+    <I18nProvider><View style={{ flex: 1, backgroundColor: '#090f18' }}>
       <StatusBar style="light" />
       <View style={{ flex: 1 }} accessibilityElementsHidden={starting} aria-hidden={starting}
         importantForAccessibility={starting ? 'no-hide-descendants' : 'auto'}>
@@ -32,6 +33,6 @@ export default function RootLayout() {
         </Stack>
       </View>
       {starting && <StartupSplash onFinished={finishStartup} />}
-    </View>
+    </View></I18nProvider>
   );
 }

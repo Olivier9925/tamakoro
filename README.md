@@ -284,3 +284,14 @@ inclure le module natif. Expo Go compatible avec le SDK inclut ce module.
 
 Notion reste la source de vérité pour le périmètre et les priorités :
 [Tamakoro — User Stories](https://app.notion.com/p/22d40c7828eb4307a0d5d07c3f851079?pvs=21).
+
+### Langues
+
+L’interface est disponible en français et en anglais. Le mode automatique utilise
+la première langue du téléphone : français si son code est `fr`, anglais pour toute
+autre langue. Le choix automatique ou manuel est enregistré localement sous
+`tamakoro.language.v1`. Le changement de langue s’applique immédiatement aux écrans,
+aux messages du jeu et aux rappels locaux ; aucune traduction distante n’est utilisée.
+`expo-localization` fournit la langue du téléphone. Après son ajout, reconstruire le
+client natif avec `npm run ios` ou `npm run android` avant d’utiliser cette version
+dans un development build existant.

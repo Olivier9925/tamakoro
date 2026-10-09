@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { parsePet, type Pet } from './pet';
+import { translate } from '@/i18n/messages';
 
 const KEY = 'tamakoro.pet.v1';
 const HISTORY_KEY = 'tamakoro.memorial.v1';
@@ -7,15 +8,15 @@ export type PetRecord = { id: string; pet: Pet };
 
 function parsePetRecords(raw: string): PetRecord[] {
   const value: unknown = JSON.parse(raw);
-  if (!Array.isArray(value)) throw new Error('Le mémorial ne peut pas être lu. Les données sont conservées sur cet appareil.');
+  if (!Array.isArray(value)) throw new Error(translate('memorial.invalid'));
   return value.map((entry: unknown) => {
     if (!entry || typeof entry !== 'object' || !('id' in entry) || typeof entry.id !== 'string'
       || !('pet' in entry) || !entry.pet || typeof entry.pet !== 'object') {
-      throw new Error('Le mémorial ne peut pas être lu. Les données sont conservées sur cet appareil.');
+      throw new Error(translate('memorial.invalid'));
     }
     const pet = parsePet(JSON.stringify(entry.pet));
     if (pet.needs.health !== 0 || entry.id !== `${pet.createdAt}:${pet.name}`) {
-      throw new Error('Le mémorial contient une fiche invalide. Les données sont conservées sur cet appareil.');
+      throw new Error(translate('memorial.invalidRecord'));
     }
     return { id: entry.id, pet };
   });

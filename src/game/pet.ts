@@ -1,3 +1,5 @@
+import { translate } from '@/i18n/messages';
+
 export const NEEDS = ['food', 'energy', 'hygiene', 'mood', 'health'] as const;
 export type Need = (typeof NEEDS)[number];
 export type Appearance = 'leaf' | 'ember' | 'water';
@@ -43,17 +45,17 @@ export function needSeverity(key: Need, value: number): 'normal' | 'warning' | '
 export function isPetDead(pet: Pet) { return pet.needs.health === 0; }
 
 export function petHealthAlert(pet: Pet) {
-  if (isPetDead(pet)) return `${pet.name} est décédé. Les soins et la croissance sont arrêtés.`;
-  const causes = [pet.needs.food < 20 ? 'satiété' : null,
-    pet.needs.hygiene < 20 ? 'hygiène' : null, pet.needs.mood < 20 ? 'humeur' : null].filter(Boolean);
-  if (causes.length) return `${pet.needs.health < 20 ? 'Danger de mort. ' : ''}Santé −2/h : ${causes.join(', ')} sous 20. Nourrir, nettoyer ou jouer permet de corriger ces besoins ; hydrater rend 5 points de santé.`;
-  if (pet.needs.health < 40) return 'Santé fragile. Elle remonte de 1/h lorsque satiété, hygiène et humeur restent à 20 ou plus. Hydrater rend 5 points.';
+  if (isPetDead(pet)) return translate('home.healthDead', { name: pet.name });
+  const causes = [pet.needs.food < 20 ? translate('need.food') : null,
+    pet.needs.hygiene < 20 ? translate('need.hygiene') : null, pet.needs.mood < 20 ? translate('need.mood') : null].filter(Boolean);
+  if (causes.length) return `${pet.needs.health < 20 ? translate('home.healthDangerPrefix') : ''}${translate('home.healthCauses', { causes: causes.join(', ') })}`;
+  if (pet.needs.health < 40) return translate('home.healthFragile');
   return null;
 }
 
 export function createPet(name: string, appearance: Appearance, now: number): Pet {
   const trimmed = name.trim();
-  if (!trimmed || trimmed.length > 20) throw new Error('Choisis un nom de 1 à 20 caractères.');
+  if (!trimmed || trimmed.length > 20) throw new Error(translate('validation.name'));
   return { version: 1, name: trimmed, appearance, createdAt: now, updatedAt: now,
     sleeping: false, needs: { food: 85, energy: 90, hygiene: 85, mood: 90, health: 100 } };
 }
@@ -126,15 +128,15 @@ export function careForPet(pet: Pet, action: Action, now: number): Pet {
 }
 
 export function petMood(pet: Pet) {
-  if (isPetDead(pet)) return 'Décédé';
-  if (pet.needs.health < 20) return 'Danger de mort';
-  if (pet.needs.health < NEED_WARNING.health) return 'Besoin de soins';
-  if (pet.sleeping) return 'Endormi';
-  if (pet.needs.food < NEED_WARNING.food) return 'Un petit creux';
-  if (pet.needs.energy < NEED_WARNING.energy) return 'Fatigué';
-  if (pet.needs.hygiene < NEED_WARNING.hygiene) return 'Besoin d’un bain';
-  if (pet.needs.mood < NEED_WARNING.mood) return 'Envie de jouer';
-  return 'Heureux';
+  if (isPetDead(pet)) return translate('home.deceased');
+  if (pet.needs.health < 20) return translate('home.danger');
+  if (pet.needs.health < NEED_WARNING.health) return translate('home.needsCare');
+  if (pet.sleeping) return translate('home.sleeping');
+  if (pet.needs.food < NEED_WARNING.food) return translate('home.hungry');
+  if (pet.needs.energy < NEED_WARNING.energy) return translate('home.tired');
+  if (pet.needs.hygiene < NEED_WARNING.hygiene) return translate('home.needsBath');
+  if (pet.needs.mood < NEED_WARNING.mood) return translate('home.wantsPlay');
+  return translate('home.happy');
 }
 
 export function parsePet(raw: string): Pet {
@@ -144,7 +146,7 @@ export function parsePet(raw: string): Pet {
     || typeof value.sleeping !== 'boolean' || !Number.isFinite(value.createdAt)
     || !Number.isFinite(value.updatedAt) || value.createdAt < 0 || value.updatedAt < value.createdAt
     || !NEEDS.every(key => Number.isFinite(value.needs?.[key]) && value.needs[key] >= 0 && value.needs[key] <= 100)) {
-    throw new Error('La sauvegarde ne peut pas être lue. Elle est conservée sur cet appareil.');
+    throw new Error(translate('save.unreadable'));
   }
   return value as Pet;
 }

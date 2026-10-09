@@ -2,6 +2,7 @@ import { requireOptionalNativeModule } from 'expo';
 import type { NotificationPermissionsStatus, NotificationResponse } from 'expo-notifications';
 import { Platform } from 'react-native';
 import type { ReminderAdapter, ReminderPermission } from './reminder-controller';
+import { translate } from '@/i18n/messages';
 
 const DAILY_ID = 'tamakoro.daily';
 const TEST_ID = 'tamakoro.test';
@@ -22,7 +23,7 @@ function notifications() {
 async function channel() {
   const Notifications = await notifications();
   if (Platform.OS === 'android') await Notifications.setNotificationChannelAsync(CHANNEL, {
-    name: 'Rappels Tamakoro', importance: Notifications.AndroidImportance.DEFAULT,
+    name: translate('reminder.channel'), importance: Notifications.AndroidImportance.DEFAULT,
   });
 }
 function permissionValue(value: NotificationPermissionsStatus, Notifications: typeof import('expo-notifications')): ReminderPermission {
@@ -32,8 +33,8 @@ function permissionValue(value: NotificationPermissionsStatus, Notifications: ty
     : value.ios.status === Notifications.IosAuthorizationStatus.DENIED ? 'denied' : 'undetermined';
   return value.granted ? 'granted' : value.status === 'denied' ? 'denied' : 'undetermined';
 }
-const content = (name: string) => ({ title: 'Un petit moment avec ton Tamakoro ?',
-  body: `Pense à vérifier les besoins de ${name}.`, sound: 'default', data: { tamakoroReminder: true } });
+const content = (name: string) => ({ title: translate('reminder.notificationTitle'),
+  body: translate('reminder.notificationBody', { name }), sound: 'default', data: { tamakoroReminder: true } });
 
 export const reminderPlatform: ReminderAdapter = {
   supported,
