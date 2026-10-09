@@ -2,6 +2,47 @@
 
 Application Expo, React Native et TypeScript pour iOS et Android.
 
+## Captures de l’application
+
+Captures conservées au fil du développement : certains visuels, textes et réglages
+ont évolué depuis leur réalisation. Cliquer sur une image pour l’ouvrir en grand.
+
+| Compagnon et croissance | Santé et alertes | Souvenir après le décès |
+| --- | --- | --- |
+| [<img src="docs/growth-interface-preview.jpg" width="220" alt="Écran de soins de Momo avec son stade, sa prochaine évolution et ses jauges">](docs/growth-interface-preview.jpg) | [<img src="docs/health-alert-preview.jpg" width="220" alt="Alerte de santé du Tamakoro avec ses besoins critiques">](docs/health-alert-preview.jpg) | [<img src="docs/death-preview.jpg" width="220" alt="Écran souvenir après le décès du Tamakoro">](docs/death-preview.jpg) |
+
+| Sommeil | Guide du compagnon | Paramètres et rappels sur iOS |
+| --- | --- | --- |
+| [<img src="docs/incubator-sleep-preview.png" width="220" alt="Tamakoro endormi dans son incubateur éclairé en bleu">](docs/incubator-sleep-preview.png) | [<img src="docs/help-preview.jpg" width="220" alt="Guide des soins, du sommeil et de la croissance">](docs/help-preview.jpg) | [<img src="docs/settings-ios-preview.png" width="220" alt="Écran des paramètres avec le rappel quotidien sur simulateur iOS">](docs/settings-ios-preview.png) |
+
+Les autres captures et aperçus animés sont disponibles dans [`docs/`](docs/).
+L’[aperçu HTML des évolutions](docs/tamakoro-evolutions-preview.html) permet
+également de parcourir les formes et animations ; télécharger le fichier et
+l’ouvrir dans un navigateur pour utiliser l’aperçu interactif.
+
+## Affiches et visuels App Store
+
+Les deux illustrations promotionnelles françaises préparées pour Apple sont
+conservées dans [`marketing/app-store/fr-FR/`](marketing/app-store/fr-FR/).
+
+### En-tête de la page produit
+
+Format **3840 × 1646 px**, ratio **21:9**.
+
+[<img src="marketing/app-store/fr-FR/tamakoro-entete-3840x1646.png" width="800" alt="Affiche panoramique Tamakoro : compagnon Feuille dans un incubateur entouré de circuits électroniques">](marketing/app-store/fr-FR/tamakoro-entete-3840x1646.png)
+
+### Résultats de recherche
+
+Format **3840 × 2560 px**, ratio **3:2**.
+
+[<img src="marketing/app-store/fr-FR/tamakoro-recherche-3840x2560.png" width="800" alt="Affiche Tamakoro : Adopte ton petit compagnon. Fais-le grandir.">](marketing/app-store/fr-FR/tamakoro-recherche-3840x2560.png)
+
+Les exports sont des PNG RGB en sRGB, sans transparence.
+Les dimensions, les placements et les instructions de chargement sont détaillés
+dans le [guide des ressources App Store](marketing/app-store/fr-FR/README.md).
+Les deux PNG sont aussi regroupés dans
+[l’archive ZIP](marketing/app-store/fr-FR/tamakoro-app-store-fr-FR.zip).
+
 ## Démarrage
 
 Depuis ce dossier, avec Node.js 22.13 ou plus récent et npm :
