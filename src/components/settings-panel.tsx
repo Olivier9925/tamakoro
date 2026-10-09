@@ -4,6 +4,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DigitalBackground } from '@/components/digital-background';
 import { TERMINAL_FONT } from '@/components/digital-art';
+import { BackupSettings } from '@/components/backup-settings';
 import { ReminderSettings } from '@/components/reminder-settings';
 import { loadPetRecords } from '@/game/storage';
 import { useI18n } from '@/i18n/provider';
@@ -54,6 +55,7 @@ export function SettingsPanel() {
           <Text style={{ color: '#87b8c3', fontFamily: TERMINAL_FONT, fontSize: 9, marginTop: 4 }}>{t('settings.memorialDescription')}</Text>
         </Pressable>
       </Link>}
+      <BackupSettings />
       <ReminderSettings />
     </ScrollView>
   </View>;

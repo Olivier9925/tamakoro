@@ -11,7 +11,8 @@ npm ci
 npm start
 ```
 
-Scanner le QR code avec une version d’Expo Go compatible avec le SDK du projet.
+Expo Go permet de découvrir la partie locale ; iCloud nécessite une recompilation
+native avec le module local fourni dans `modules/tamakoro-cloud-backup/`.
 `npm run ios` ouvre le simulateur iOS (Xcode requis), `npm run android` ouvre
 l’émulateur Android (Android Studio requis), et `npm run web` lance la version web.
 
@@ -302,3 +303,66 @@ aux messages du jeu et aux rappels locaux ; aucune traduction distante n’est u
 `expo-localization` fournit la langue du téléphone. Après son ajout, reconstruire le
 client natif avec `npm run ios` ou `npm run android` avant d’utiliser cette version
 dans un development build existant.
+
+## Sauvegarde et récupération
+
+La partie, les statistiques et le mémorial sont enregistrés ensemble dans
+`tamakoro.game.v1`. Les anciennes clés de partie et mémorial sont migrées après
+validation et conservées. Les préférences de langue et rappels restent propres au
+téléphone pour la synchronisation iCloud.
+
+- **iOS** : copie automatique dans la base privée CloudKit du compte iCloud déjà
+  présent sur le téléphone. Aucune connexion Tamakoro. La lecture précède la première
+  adoption ; un échec réseau sur une installation vide propose de réessayer pour
+  protéger une éventuelle partie distante. Sans compte iCloud, le jeu reste local.
+- **Android** : `allowBackup: true` autorise Auto Backup à inclure le stockage
+  AsyncStorage. La sauvegarde et la restauration dépendent du système, de son
+  fournisseur de sauvegarde et des réglages du compte Google. Elles ne sont pas
+  déclenchées par l’app ; elle ne peut pas connaître la date du dernier envoi.
+- **Web** : sauvegarde locale uniquement.
+
+Sur iOS, les écritures locales continuent hors ligne. La synchronisation est
+retentée après les soins, au retour au premier plan, chaque minute en cas d’échec
+pendant que l’app est ouverte, ou depuis les paramètres.
+Il n’y a pas de synchronisation permanente en arrière-plan. Les fichiers locaux
+AsyncStorage sont aussi inclus dans les sauvegardes système iOS.
+La récupération automatique nécessite le même compte et la même plateforme ;
+elle ne couvre pas un passage iPhone ↔ Android.
+
+Les sauvegardes sont validées avant remplacement et les écritures sérialisées.
+CloudKit contrôle la version serveur pour éviter les écrasements concurrents.
+Si deux parties différentes ont été modifiées, les paramètres permettent de choisir
+la version du téléphone ou celle d’iCloud après confirmation. Le temps écoulé est
+recalculé au retour : récupérer une partie ne suspend pas la vie du compagnon.
+
+### Mise en service CloudKit (Apple Developer)
+
+1. Activer iCloud / CloudKit pour l’identifiant `com.olivier9925.tamakoro` et
+   lui associer le conteneur `iCloud.com.olivier9925.tamakoro`. Le config plugin
+   ajoute les entitlements au prochain prebuild ; EAS doit renouveler le profil
+   de provisioning pour ces capacités. Initialiser les credentials depuis un
+   terminal interactif si le build GitHub ne peut pas le faire.
+2. Dans CloudKit Console, en environnement **Development**, créer le type de
+   record `TamakoroBackup` avec un champ `payload` de type **String**, ou le laisser
+   créer par un premier essai de sauvegarde dans un build de développement signé.
+   L’enregistrement fixe `tamakoro-backup-v1` appartient à la base **Private**.
+   Aucun index de requête ni abonnement push n’est utilisé.
+3. Déployer le schéma vers **Production** avant TestFlight/App Store. Les bases
+   Development et Production sont distinctes ; une sauvegarde de développement
+   n’apparaît pas dans TestFlight.
+4. Recompiler l’app. Une mise à jour OTA ne peut pas ajouter le module natif.
+   Pour le développement local, lancer `npm run prebuild:ios`, puis `npm run ios`
+   après avoir préservé d’éventuels ajustements natifs manuels.
+5. Sur un appareil connecté à iCloud, adopter puis soigner un compagnon et vérifier
+   « Sauvegarde iCloud à jour ». Réinstaller ou ouvrir sur un autre appareil avec
+   le même compte et le même environnement, puis vérifier la partie et le mémorial.
+   Essayer également l’absence de réseau et un conflit entre deux appareils.
+
+Pour Android, configurer l’identifiant stable `android.package` avant le premier
+build, puis vérifier la restauration réelle avec la sauvegarde système activée,
+le même compte et une signature compatible. La sauvegarde système n’est pas
+immédiate ; une réinstallation avant son exécution peut perdre les derniers soins.
+
+La page `index.html` décrit la nouvelle conservation cloud. Supprimer l’application
+ne supprime pas sa copie CloudKit ; celle-ci se gère depuis les réglages de stockage
+iCloud. Aucun serveur de jeu du développeur ne reçoit ces sauvegardes.

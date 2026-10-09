@@ -1,3 +1,4 @@
+import { backup } from '@/backup/runtime';
 import { Stack } from 'expo-router/stack';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useState } from 'react';
@@ -15,10 +16,19 @@ export default function RootLayout() {
   useEffect(() => {
     void reminders.refresh();
     const subscription = AppState.addEventListener('change', state => {
-      if (state === 'active') void reminders.refresh();
+      if (state === 'active') {
+        void reminders.refresh();
+        void backup.refresh().catch(() => {});
+      }
     });
+    const retry = setInterval(() => {
+      const status = backup.getSnapshot().status;
+      if (AppState.currentState === 'active' && (status === 'pending' || status === 'error' || status === 'unavailable')) {
+        void backup.refresh().catch(() => {});
+      }
+    }, 60_000);
     const stop = observeReminderTap(() => router.dismissTo('/'));
-    return () => { subscription.remove(); stop(); };
+    return () => { clearInterval(retry); subscription.remove(); stop(); };
   }, []);
   return (
     <I18nProvider><View style={{ flex: 1, backgroundColor: '#090f18' }}>

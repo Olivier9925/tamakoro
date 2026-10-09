@@ -12,12 +12,14 @@
       "icon": "./assets/images/tamakoro-icon-v2.png",
       "bundleIdentifier": "com.olivier9925.tamakoro",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "RCTAsyncStorageExcludeFromBackup": false
       }
     },
     "android": {
       "icon": "./assets/images/tamakoro-icon-v2.png",
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "allowBackup": true
     },
     "web": {
       "output": "static",
@@ -45,7 +47,8 @@
           }
         }
       ],
-      "expo-localization"
+      "expo-localization",
+      "./plugins/with-backup.cjs"
     ],
     "extra": {
       "eas": {

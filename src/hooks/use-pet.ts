@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { getLocalRevision } from '@/backup/local';
+import { backup } from '@/backup/runtime';
 import { AppState } from 'react-native';
 import { ACTION_ENERGY_COST, advancePet, careForPet, createPet, isPetDead, NEEDS, petGrowth, petHealthAlert, type Action, type Appearance, type Need, type Pet } from '@/game/pet';
 import { archivePet, loadPet, loadPetRecords, savePet, type PetRecord } from '@/game/storage';
@@ -36,6 +38,7 @@ export function usePet() {
   const [saveFailed, setSaveFailed] = useState(false);
   const [petRecords, setPetRecords] = useState<PetRecord[]>([]);
   const [historyError, setHistoryError] = useState<string | null>(null);
+  const pendingWrites = useRef(0);
   const queue = useRef<Promise<void>>(Promise.resolve());
   const petName = pet?.name;
   const petDead = pet ? isPetDead(pet) : false;
@@ -44,18 +47,21 @@ export function usePet() {
   }, [petName, petDead, loading, loadFailed]);
 
   const persist = useCallback((value: Pet, archive = false) => {
+    const revision = getLocalRevision();
+    pendingWrites.current++;
     // Serialize writes so an older snapshot cannot overwrite a newer action.
     const write = queue.current.catch(() => {}).then(async () => {
-      await savePet(value);
+      await savePet(value, revision);
       if (archive) {
-        await archivePet(value);
+        await archivePet(value, revision);
         const records = await loadPetRecords();
         setPetRecords(records);
         setHistoryError(null);
       }
     });
-    queue.current = write;
-    return write;
+    const settled = write.finally(() => { pendingWrites.current--; });
+    queue.current = settled;
+    return settled;
   }, []);
   const load = useCallback(() => {
     return loadPet().then(async saved => {
@@ -83,6 +89,10 @@ export function usePet() {
     }).finally(() => setLoading(false));
   }, [persist, setMessage]);
   useEffect(() => { void load(); }, [load]);
+  useEffect(() => backup.subscribeRestoreGuard(() => pendingWrites.current === 0), []);
+  useEffect(() => backup.subscribeRestores(() => {
+    current.current = null; setLoading(true); void load();
+  }), [load]);
   useEffect(() => {
     const refresh = () => {
       if (!current.current || locked.current) return;
