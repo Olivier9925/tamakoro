@@ -32,7 +32,7 @@ function Screw() {
   </View>;
 }
 
-export function AppHeader({ panel }: { panel?: 'help' | 'settings' }) {
+export function AppHeader({ panel }: { panel?: 'help' | 'settings' | 'memorial' }) {
   const insets = useSafeAreaInsets();
   return <View style={{ paddingTop: insets.top, backgroundColor: '#0b131c',
     borderBottomWidth: 1, borderBottomColor: '#263b46' }}>
@@ -51,7 +51,7 @@ export function AppHeader({ panel }: { panel?: 'help' | 'settings' }) {
           <Text accessible={false} style={{ color: '#91abb7', fontFamily: TERMINAL_FONT,
             fontSize: 8, letterSpacing: 2 }}>COMPAGNON VIRTUEL</Text>
         </View>
-        {panel ? headerKey(panel === 'help' ? 'Fermer l’aide' : 'Fermer les paramètres', '×',
+        {panel ? headerKey(panel === 'help' ? 'Fermer l’aide' : panel === 'settings' ? 'Fermer les paramètres' : 'Fermer le mémorial', '×',
           () => { if (router.canGoBack()) router.back(); else router.replace('/'); })
           : <Link href="/help" asChild>{headerKey('Ouvrir l’aide', '?')}</Link>}
       </View>

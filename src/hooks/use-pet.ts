@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
 import { advancePet, careForPet, createPet, isPetDead, petGrowth, petHealthAlert, type Action, type Appearance, type Pet } from '@/game/pet';
-import { loadPet, savePet } from '@/game/storage';
+import { archivePet, loadPet, loadPetRecords, savePet, type PetRecord } from '@/game/storage';
 import { reminders } from '@/reminders/reminders';
 
 function growthNotice(previous: Pet, next: Pet) {
@@ -29,6 +29,8 @@ export function usePet() {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState('Chaque petit soin compte.');
   const [saveFailed, setSaveFailed] = useState(false);
+  const [petRecords, setPetRecords] = useState<PetRecord[]>([]);
+  const [historyError, setHistoryError] = useState<string | null>(null);
   const queue = useRef<Promise<void>>(Promise.resolve());
   const petName = pet?.name;
   const petDead = pet ? isPetDead(pet) : false;
@@ -36,22 +38,39 @@ export function usePet() {
     if (!loading && !loadFailed) void reminders.setPet(petName ? { name: petName, alive: !petDead } : null);
   }, [petName, petDead, loading, loadFailed]);
 
-  const persist = useCallback((value: Pet) => {
+  const persist = useCallback((value: Pet, archive = false) => {
     // Serialize writes so an older snapshot cannot overwrite a newer action.
-    const write = queue.current.catch(() => {}).then(() => savePet(value));
+    const write = queue.current.catch(() => {}).then(async () => {
+      await savePet(value);
+      if (archive) {
+        await archivePet(value);
+        const records = await loadPetRecords();
+        setPetRecords(records);
+        setHistoryError(null);
+      }
+    });
     queue.current = write;
     return write;
   }, []);
   const load = useCallback(() => {
-    return loadPet().then(saved => {
+    return loadPet().then(async saved => {
       const value = saved ? advancePet(saved, Date.now()) : null;
+      try {
+        setPetRecords(await loadPetRecords());
+        setHistoryError(null);
+      } catch (cause) {
+        setHistoryError(cause instanceof Error ? cause.message : 'Impossible de lire le mémorial.');
+      }
       if (saved && value) {
         const notice = elapsedNotice(saved, value);
         if (notice) setMessage(notice);
       }
       current.current = value; setPet(value); setLoadFailed(false);
-      if (value && saved && ((isPetDead(value) && !isPetDead(saved)) || (saved.sleeping && !value.sleeping))) {
-        void persist(value).then(() => setSaveFailed(false), () => setSaveFailed(true));
+      if (value && saved && (isPetDead(value) || (saved.sleeping && !value.sleeping))) {
+        void persist(value, isPetDead(value)).then(() => setSaveFailed(false), cause => {
+          setSaveFailed(true);
+          if (isPetDead(value)) setHistoryError(cause instanceof Error ? cause.message : 'Archivage impossible.');
+        });
       }
     }).catch(cause => {
       setLoadFailed(true);
@@ -68,7 +87,10 @@ export function usePet() {
       if (notice) setMessage(notice);
       current.current = value; setPet(value);
       if ((isPetDead(value) && notice) || (previous.sleeping && !value.sleeping)) {
-        void persist(value).then(() => setSaveFailed(false), () => setSaveFailed(true));
+        void persist(value, isPetDead(value)).then(() => setSaveFailed(false), cause => {
+          setSaveFailed(true);
+          if (isPetDead(value)) setHistoryError(cause instanceof Error ? cause.message : 'Archivage impossible.');
+        });
       }
     };
     const timer = setInterval(() => { if (AppState.currentState === 'active') refresh(); }, 30_000);
@@ -84,6 +106,7 @@ export function usePet() {
     if (locked.current || loadFailed || (current.current && !isPetDead(current.current))) return false;
     locked.current = true; setBusy(true); setError(null);
     try {
+      if (current.current && isPetDead(current.current)) await persist(current.current, true);
       const value = createPet(name, appearance, Date.now());
       await persist(value);
       current.current = value; setPet(value); setSaveFailed(false); setMessage(`Bienvenue, ${value.name} !`);
@@ -107,17 +130,23 @@ export function usePet() {
     };
     const notice = growthNotice(previous, value);
     setMessage(isPetDead(value) ? petHealthAlert(value)! : notice ? `${notice} ${messages[action]}` : `${messages[action]} Les jauges restent entre 0 et 100.`);
-    try { await persist(value); setSaveFailed(false); }
-    catch { setSaveFailed(true); }
+    try { await persist(value, isPetDead(value)); setSaveFailed(false); }
+    catch (cause) {
+      setSaveFailed(true);
+      if (isPetDead(value)) setHistoryError(cause instanceof Error ? cause.message : 'Archivage impossible.');
+    }
     finally { locked.current = false; setBusy(false); }
   };
   const retrySave = async () => {
     if (!current.current || locked.current) return;
     locked.current = true; setBusy(true);
-    try { await persist(current.current); setSaveFailed(false); }
-    catch { setSaveFailed(true); }
+    try { await persist(current.current, isPetDead(current.current)); setSaveFailed(false); }
+    catch (cause) {
+      setSaveFailed(true);
+      if (isPetDead(current.current)) setHistoryError(cause instanceof Error ? cause.message : 'Archivage impossible.');
+    }
     finally { locked.current = false; setBusy(false); }
   };
   const retryLoad = () => { setLoading(true); setError(null); void load(); };
-  return { pet, loading, loadFailed, busy, error, message, saveFailed, load: retryLoad, adopt, care, retrySave };
+  return { pet, petRecords, historyError, loading, loadFailed, busy, error, message, saveFailed, load: retryLoad, adopt, care, retrySave };
 }

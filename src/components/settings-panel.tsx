@@ -1,4 +1,5 @@
-import { ScrollView, Text, View } from 'react-native';
+import { Link } from 'expo-router';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DigitalBackground } from '@/components/digital-background';
 import { TERMINAL_FONT } from '@/components/digital-art';
@@ -13,6 +14,13 @@ export function SettingsPanel() {
       width: '100%', maxWidth: 560, alignSelf: 'center' }}>
       <Text accessibilityRole="header" style={{ color: '#eaf6f0', fontFamily: TERMINAL_FONT,
         fontSize: 22, fontWeight: '700' }}>Paramètres</Text>
+      <Link href="/memorial" asChild>
+        <Pressable accessibilityRole="button" style={{ minHeight: 52, justifyContent: 'center', paddingHorizontal: 14,
+          backgroundColor: '#101c26', borderRadius: 10, borderWidth: 1, borderColor: '#354650', borderTopColor: '#5a6974' }}>
+          <Text style={{ color: '#d7ffe4', fontFamily: TERMINAL_FONT, fontSize: 13, fontWeight: '700' }}>Voir le mémorial ›</Text>
+          <Text style={{ color: '#87b8c3', fontFamily: TERMINAL_FONT, fontSize: 9, marginTop: 4 }}>Retrouver les Tamakoro qui ont partagé ton aventure</Text>
+        </Pressable>
+      </Link>
       <ReminderSettings />
     </ScrollView>
   </View>;

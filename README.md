@@ -265,6 +265,10 @@ date du décès ; une nouvelle adoption nécessite une validation explicite avan
 remplacer la partie. Le format v1 et la clé de sauvegarde existants sont conservés :
 une santé à zéro suffit à identifier cet état. Cette règle de mort remplace, à la
 demande du joueur, la protection initiale du MVP contre les pertes irréversibles.
+Les fiches des compagnons décédés sont conservées séparément dans le mémorial local,
+accessible depuis les paramètres. Elles gardent leur apparence, leur stade, leur âge,
+leurs dates et leurs dernières jauges ; les anciennes parties déjà décédées sont
+ajoutées au mémorial au prochain lancement.
 
 Les alertes commencent sous 25 pour satiété, énergie et hygiène, sous 30 pour
 humeur et sous 40 pour santé. Les jauges deviennent rouges sous 20 (sous 10 pour
