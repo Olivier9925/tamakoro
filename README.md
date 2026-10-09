@@ -263,8 +263,10 @@ est calculé précisément, indépendamment du nombre de rafraîchissements ; so
 et sa croissance sont ensuite figés, et aucun soin ne peut le ressusciter.
 Le décès est enregistré immédiatement. L’incubateur devient un souvenir avec la
 date du décès ; une nouvelle adoption nécessite une validation explicite avant de
-remplacer la partie. Le format v1 et la clé de sauvegarde existants sont conservés :
-une santé à zéro suffit à identifier cet état. Cette règle de mort remplace, à la
+remplacer la partie. La sauvegarde utilise le format v2 avec migration transparente
+des parties v1, tout en gardant la clé existante ; une santé à zéro suffit à identifier
+cet état. Les compteurs de soins, jeux et siestes des anciennes parties commencent
+à zéro. Cette règle de mort remplace, à la
 demande du joueur, la protection initiale du MVP contre les pertes irréversibles.
 Les fiches des compagnons décédés sont conservées séparément dans le mémorial local,
 accessible depuis les paramètres. Elles gardent leur apparence, leur stade, leur âge,

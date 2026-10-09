@@ -7,7 +7,7 @@ const { test, after } = require('node:test');
 const output = mkdtempSync(join(tmpdir(), 'tamakoro-reminder-tests-'));
 execFileSync(process.execPath, ['node_modules/typescript/bin/tsc', 'src/reminders/reminder-controller.ts',
   '--outDir', output, '--module', 'commonjs', '--target', 'es2020', '--skipLibCheck', '--strict', '--ignoreConfig']);
-const { ReminderController, DEFAULT_REMINDER, parseReminder, reminderTime } = require(join(output, 'reminder-controller.js'));
+const { ReminderController, DEFAULT_REMINDER, parseReminder, reminderTime } = require(join(output, 'reminders', 'reminder-controller.js'));
 after(() => rmSync(output, { recursive: true, force: true }));
 function setup(raw = null) {
   const env = { raw, permission: 'granted', requests: 0, schedules: [], pending: null,

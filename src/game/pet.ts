@@ -1,20 +1,23 @@
-import { translate } from '@/i18n/messages';
+import { translate } from '../i18n/messages';
 
 export const NEEDS = ['food', 'energy', 'hygiene', 'mood', 'health'] as const;
 export type Need = (typeof NEEDS)[number];
 export type Appearance = 'leaf' | 'ember' | 'water';
 export type Action = 'feed' | 'hydrate' | 'clean' | 'play' | 'sleep';
+export type PetStats = { feed: number; hydrate: number; clean: number; play: number; naps: number };
+const EMPTY_STATS: PetStats = { feed: 0, hydrate: 0, clean: 0, play: 0, naps: 0 };
 export const ACTION_ENERGY_COST: Record<Exclude<Action, 'sleep'>, number> = {
   feed: 4, hydrate: 3, clean: 6, play: 12,
 };
 export type Pet = {
-  version: 1;
+  version: 2;
   name: string;
   appearance: Appearance;
   createdAt: number;
   updatedAt: number;
   sleeping: boolean;
   needs: Record<Need, number>;
+  stats: PetStats;
 };
 export const HOUR = 3_600_000;
 export const DAY = 24 * HOUR;
@@ -59,8 +62,8 @@ export function petHealthAlert(pet: Pet) {
 export function createPet(name: string, appearance: Appearance, now: number): Pet {
   const trimmed = name.trim();
   if (!trimmed || trimmed.length > 20) throw new Error(translate('validation.name'));
-  return { version: 1, name: trimmed, appearance, createdAt: now, updatedAt: now,
-    sleeping: false, needs: { food: 85, energy: 90, hygiene: 85, mood: 90, health: 100 } };
+  return { version: 2, name: trimmed, appearance, createdAt: now, updatedAt: now,
+    sleeping: false, needs: { food: 85, energy: 90, hygiene: 85, mood: 90, health: 100 }, stats: { ...EMPTY_STATS } };
 }
 
 // Apply one interval with fixed sleep state. Threshold segmentation keeps health
@@ -119,7 +122,8 @@ export function advancePet(pet: Pet, now: number): Pet {
 export function careForPet(pet: Pet, action: Action, now: number): Pet {
   const next = advancePet(pet, now);
   if (isPetDead(next)) return next;
-  if (action === 'sleep') return { ...next, sleeping: !next.sleeping };
+  if (action === 'sleep') return next.sleeping ? { ...next, sleeping: false }
+    : { ...next, sleeping: true, stats: { ...next.stats, naps: next.stats.naps + 1 } };
   if (next.sleeping) return next;
   if (next.needs.energy < ACTION_ENERGY_COST[action]) return next;
   const needs = { ...next.needs };
@@ -129,7 +133,7 @@ export function careForPet(pet: Pet, action: Action, now: number): Pet {
   if (action === 'clean') { needs.hygiene += 35; needs.mood += 5; }
   if (action === 'play') { needs.mood += 25; needs.food -= 4; }
   for (const key of NEEDS) needs[key] = clamp(needs[key]);
-  return { ...next, needs };
+  return { ...next, needs, stats: { ...next.stats, [action]: next.stats[action] + 1 } };
 }
 
 export function petMood(pet: Pet) {
@@ -146,12 +150,15 @@ export function petMood(pet: Pet) {
 
 export function parsePet(raw: string): Pet {
   const value = JSON.parse(raw);
-  if (!value || value.version !== 1 || typeof value.name !== 'string' || !value.name.trim()
+  if (!value || (value.version !== 1 && value.version !== 2) || typeof value.name !== 'string' || !value.name.trim()
     || value.name.length > 20 || !['leaf', 'ember', 'water'].includes(value.appearance)
     || typeof value.sleeping !== 'boolean' || !Number.isFinite(value.createdAt)
     || !Number.isFinite(value.updatedAt) || value.createdAt < 0 || value.updatedAt < value.createdAt
     || !NEEDS.every(key => Number.isFinite(value.needs?.[key]) && value.needs[key] >= 0 && value.needs[key] <= 100)) {
     throw new Error(translate('save.unreadable'));
   }
+  if (value.version === 1) return { ...value, version: 2, stats: { ...EMPTY_STATS } } as Pet;
+  if (!['feed', 'hydrate', 'clean', 'play', 'naps'].every(key =>
+    Number.isSafeInteger(value.stats?.[key]) && value.stats[key] >= 0)) throw new Error(translate('save.unreadable'));
   return value as Pet;
 }

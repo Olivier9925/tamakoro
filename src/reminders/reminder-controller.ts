@@ -1,4 +1,4 @@
-import { translate } from '@/i18n/messages';
+import { translate } from '../i18n/messages';
 
 export type ReminderSettings = { version: 1; enabled: boolean; hour: number; minute: number };
 export type ReminderPermission = 'granted' | 'denied' | 'undetermined' | 'unavailable';

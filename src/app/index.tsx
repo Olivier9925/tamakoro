@@ -114,6 +114,9 @@ export default function HomeScreen() {
               fontSize: 22, fontWeight: '700', letterSpacing: 1 }}>{pet.name}</Text>
           </View>
           <Text style={{ color: colors.muted, fontFamily: TERMINAL_FONT, fontSize: 10 }}>{stageLabel(growth?.stageIndex ?? 0, language)} · {formatAge(growth?.ageHours ?? 0, t)} · {appearanceLabel(pet.appearance, language)}</Text>
+          <Text style={{ color: '#87b8c3', fontFamily: TERMINAL_FONT, fontSize: 9 }}>
+            {t('home.stats', { care: pet.stats.feed + pet.stats.hydrate + pet.stats.clean, play: pet.stats.play, naps: pet.stats.naps })}
+          </Text>
           {dead ? <Text style={{ color: '#87b8c3', fontFamily: TERMINAL_FONT, fontSize: 9 }}>{t('home.remembrance')}</Text>
             : pet.sleeping ? <Text accessibilityLiveRegion="polite" style={{ color: '#9bd8ff', fontFamily: TERMINAL_FONT, fontSize: 9 }}>
               {t('home.wakeCountdown', { time: formatWakeTime(pet.needs.energy, t) })}
