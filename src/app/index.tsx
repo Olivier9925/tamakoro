@@ -1,5 +1,5 @@
 import { Button, Host } from '@expo/ui';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, TextInput, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { APPEARANCES } from '@/components/pixel-pet';
@@ -28,6 +28,12 @@ function Control({ label, onPress, disabled = false, selected = false }: {
 }
 export default function HomeScreen() {
   const game = usePet();
+  const [lastAction, setLastAction] = useState<{ action: 'feed' | 'hydrate' | 'play' | 'clean'; at: number } | null>(null);
+  useEffect(() => {
+    if (!lastAction) return;
+    const timer = setTimeout(() => setLastAction(null), 2_200);
+    return () => clearTimeout(timer);
+  }, [lastAction]);
   const [name, setName] = useState('Momo');
   const [appearance, setAppearance] = useState<Appearance>('leaf');
   const [preparingAdoption, setPreparingAdoption] = useState(false);
@@ -96,11 +102,12 @@ export default function HomeScreen() {
             fontSize: 11 }}>{petMood(pet)}</Text>
         </View>
       </TerminalPanel>
-      <IncubatorScene appearance={pet.appearance} stageIndex={growth?.stageIndex} sleeping={pet.sleeping || dead} dead={dead} height={sceneHeight} />
+      <IncubatorScene appearance={pet.appearance} stageIndex={growth?.stageIndex} sleeping={pet.sleeping || dead} dead={dead} height={sceneHeight}
+        action={lastAction ? `${lastAction.action}-${lastAction.at}` : null} />
       <NeedGauges pet={pet} />
       {dead ? <Control label="Adopter un nouveau Tamakoro" disabled={game.busy} onPress={() => { setName(''); setPreparingAdoption(true); }} /> : <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
         {actions.map(({ action, label, symbol, color }) => <CareKey key={action} label={label} symbol={symbol} color={color}
-          disabled={game.busy || pet.sleeping} onPress={() => { void game.care(action); }} />)}
+          disabled={game.busy || pet.sleeping} onPress={() => { if (action !== 'sleep') setLastAction({ action, at: Date.now() }); void game.care(action); }} />)}
         <CareKey label={pet.sleeping ? 'Réveiller' : 'Dormir'} symbol={pet.sleeping ? '☀' : '☾'} color="#c6a0ff"
           disabled={game.busy} onPress={() => { void game.care('sleep'); }} />
       </View>}
