@@ -14,7 +14,8 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "RCTAsyncStorageExcludeFromBackup": false
-      }
+      },
+      "appleTeamId": "F8JXH55Q48"
     },
     "android": {
       "icon": "./assets/images/tamakoro-icon-v2.png",

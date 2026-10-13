@@ -445,6 +445,11 @@ Le plugin `expo-widgets` crée l’extension et configure le partage local :
 - Extension : `com.olivier9925.tamakoro.widgets`, cible `ExpoWidgetsTarget`.
 - App Group : `group.com.olivier9925.tamakoro`, commun aux deux identifiants.
 
+L’équipe Apple est définie dans `ios.appleTeamId` dans `app.json`, pour
+que l’application et le widget utilisent la même équipe de signature. Dans
+Xcode, la cible `ExpoWidgetsTarget` doit avoir cette équipe dans les configurations
+Debug et Release.
+
 Le premier build signé doit enregistrer l’extension et l’App Group et renouveler
 les profils de provisioning. EAS reçoit la déclaration d’extension via le plugin.
 Si le build GitHub ne peut pas initialiser ces ressources, lancer un premier build
