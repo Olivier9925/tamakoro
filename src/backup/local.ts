@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { parseSave } from '../game/save';
 import { createSaveStore } from './store';
 const META = 'tamakoro.cloud.v1';
-export const { readLocalSave, updateLocalSave, replaceLocalSave, getLocalRevision } = createSaveStore(AsyncStorage);
+export const { readLocalSave, updateLocalSave, replaceLocalSave, getLocalRevision, subscribeLocalSave } = createSaveStore(AsyncStorage);
 export type SyncMeta = { account: string; tag: string; payload: string };
 export async function readSyncMeta(): Promise<SyncMeta | null> {
   const raw = await AsyncStorage.getItem(META);

@@ -8,6 +8,7 @@ import { AppHeader } from '@/components/app-header';
 import { StartupSplash } from '@/components/startup-splash';
 import { reminders } from '@/reminders/reminders';
 import { observeReminderTap } from '@/reminders/reminder-platform';
+import { WidgetSync } from '@/widgets/widget-sync';
 import { I18nProvider } from '@/i18n/provider';
 
 export default function RootLayout() {
@@ -31,7 +32,7 @@ export default function RootLayout() {
     return () => { clearInterval(retry); subscription.remove(); stop(); };
   }, []);
   return (
-    <I18nProvider><View style={{ flex: 1, backgroundColor: '#090f18' }}>
+    <I18nProvider><WidgetSync /><View style={{ flex: 1, backgroundColor: '#090f18' }}>
       <StatusBar style="light" />
       <View style={{ flex: 1 }} accessibilityElementsHidden={starting} aria-hidden={starting}
         importantForAccessibility={starting ? 'no-hide-descendants' : 'auto'}>

@@ -125,3 +125,11 @@ test('an unsaved in-memory action prevents automatic cloud restoration', async (
   await assert.rejects(f.controller.initialize()); assert.deepEqual(f.local(), emptySave());
   stop(); await f.controller.initialize(); assert.equal(f.local().pet.name, 'Momo');
 });
+test('widget observers run after successful writes; observer errors never invalidate a save', async () => {
+  const store = createSaveStore(storage()); let changed = 0;
+  store.subscribeLocalSave(() => { changed++; throw Error('Widget unavailable'); });
+  await store.updateLocalSave(() => save()); assert.equal(changed, 1);
+  assert.equal((await store.readLocalSave()).pet.name, 'Momo');
+  await assert.rejects(store.updateLocalSave(value => ({ ...value, pet: { ...value.pet, name: '' } })));
+  assert.equal(changed, 1);
+});

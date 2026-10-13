@@ -4,6 +4,11 @@ import { parsePet } from '../game/pet';
 type Storage = { getItem(key: string): Promise<string | null>; setItem(key: string, value: string): Promise<void>; multiGet(keys: string[]): Promise<readonly (readonly [string, string | null])[]> };
 export function createSaveStore(storage: Storage) {
   const KEY = 'tamakoro.game.v1';
+  const listeners = new Set<() => void>();
+  const subscribeLocalSave = (listener: () => void) => {
+    listeners.add(listener);
+    return () => { listeners.delete(listener); };
+  };
   let revision = 0;
   const getLocalRevision = () => revision;
   let queue: Promise<unknown> = Promise.resolve();
@@ -16,6 +21,8 @@ export function createSaveStore(storage: Storage) {
     const payload = JSON.stringify(save);
     parseSave(payload);
     await storage.setItem(KEY, payload);
+    // A widget failure must never turn a successful game save into an error.
+    listeners.forEach(listener => { try { listener(); } catch { /* The save remains valid. */ } });
   }
   async function read(): Promise<GameSave> {
     const raw = await storage.getItem(KEY);
@@ -38,5 +45,5 @@ export function createSaveStore(storage: Storage) {
     await write(next);
     revision++;
   });
-  return { readLocalSave, updateLocalSave, replaceLocalSave, getLocalRevision };
+  return { readLocalSave, updateLocalSave, replaceLocalSave, getLocalRevision, subscribeLocalSave };
 }

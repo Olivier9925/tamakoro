@@ -1,5 +1,7 @@
 export const messages = {
   fr: {
+    'widget.adopt': 'Adopte ton compagnon', 'widget.age': '{days} j · {hours} h',
+    'widget.evolution': 'Évolution dans {days} j', 'widget.remembrance': 'En souvenir de ton compagnon',
     'backup.title': 'Sauvegarde',
     'backup.local': 'Partie sauvegardée sur cet appareil.',
     'backup.system': 'Sauvegarde gérée par Android',
@@ -91,6 +93,8 @@ export const messages = {
     'incubator.label': 'CŒUR D’INCUBATION', 'incubator.empty': 'Incubateur vide, en souvenir du Tamakoro',
   },
   en: {
+    'widget.adopt': 'Adopt your companion', 'widget.age': '{days} d · {hours} h',
+    'widget.evolution': 'Evolution in {days} d', 'widget.remembrance': 'Remembering your companion',
     'backup.title': 'Backup',
     'backup.local': 'Game saved on this device.',
     'backup.system': 'Backup managed by Android',

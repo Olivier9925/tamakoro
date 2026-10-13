@@ -48,7 +48,29 @@
         }
       ],
       "expo-localization",
-      "./plugins/with-backup.cjs"
+      "./plugins/with-backup.cjs",
+      [
+        "expo-widgets",
+        {
+          "bundleIdentifier": "com.olivier9925.tamakoro.widgets",
+          "groupIdentifier": "group.com.olivier9925.tamakoro",
+          "widgets": [
+            {
+              "name": "TamakoroWidget",
+              "displayName": "Tamakoro",
+              "description": "Ton compagnon et ses besoins · Your companion and its needs",
+              "ios": {
+                "supportedFamilies": [
+                  "systemSmall",
+                  "systemMedium"
+                ],
+                "contentMarginsDisabled": true
+              }
+            }
+          ]
+        }
+      ],
+      "expo-asset"
     ],
     "extra": {
       "eas": {

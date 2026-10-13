@@ -52,8 +52,9 @@ npm ci
 npm start
 ```
 
-Expo Go permet de découvrir la partie locale ; iCloud nécessite une recompilation
-native avec le module local fourni dans `modules/tamakoro-cloud-backup/`.
+Expo Go permet de découvrir la partie locale ; iCloud et les widgets nécessitent
+une recompilation native. Le module CloudKit local est fourni dans
+`modules/tamakoro-cloud-backup/`.
 `npm run ios` ouvre le simulateur iOS (Xcode requis), `npm run android` ouvre
 l’émulateur Android (Android Studio requis), et `npm run web` lance la version web.
 
@@ -407,3 +408,85 @@ immédiate ; une réinstallation avant son exécution peut perdre les derniers s
 La page `index.html` décrit la nouvelle conservation cloud. Supprimer l’application
 ne supprime pas sa copie CloudKit ; celle-ci se gère depuis les réglages de stockage
 iCloud. Aucun serveur de jeu du développeur ne reçoit ces sauvegardes.
+
+## Widget iOS — écran d’accueil
+
+[Ouvrir l’aperçu HTML des deux formats](docs/tamakoro-widgets-preview.html)
+(télécharger et ouvrir dans un navigateur). Il illustre aussi le sommeil, la forme
+adulte, la santé critique, le décès et l’absence d’adoption, en français et en anglais.
+Cet aperçu de mise en page ne remplace pas un essai sur l’écran d’accueil iOS.
+
+Le widget **Tamakoro** propose deux tailles :
+
+| Petit | Moyen |
+| --- | --- |
+| Forme actuelle, nom, stade, âge en jours et heures, état | Forme actuelle, nom, stade, âge, cinq jauges et prochaine évolution |
+
+Un appui ouvre directement la partie. Sans adoption, le widget invite à adopter
+un compagnon. Pendant le sommeil, il montre la pose aux yeux fermés ; après un
+décès, il garde cette pose et l’âge atteint. Le contenu suit le choix de langue
+français/anglais dans l’app. Les poses réutilisent les sprites du jeu, avec sept
+âges et trois couleurs ; aucune image distante ni animation permanente.
+
+### Installation sur l’iPhone
+
+1. Installer une version recompilée de l’app, puis l’ouvrir une première fois.
+2. Faire un appui long sur l’écran d’accueil, puis choisir **Modifier → Ajouter
+   un widget** (le libellé peut varier selon iOS).
+3. Rechercher **Tamakoro**, choisir le format petit ou moyen et ajouter le widget.
+4. Effectuer un soin dans l’app, puis revenir à l’écran d’accueil pour voir les
+   valeurs mises à jour. iOS contrôle les délais de rafraîchissement.
+
+### Configuration Apple et recompilation
+
+Le plugin `expo-widgets` crée l’extension et configure le partage local :
+
+- Application : `com.olivier9925.tamakoro`.
+- Extension : `com.olivier9925.tamakoro.widgets`, cible `ExpoWidgetsTarget`.
+- App Group : `group.com.olivier9925.tamakoro`, commun aux deux identifiants.
+
+Le premier build signé doit enregistrer l’extension et l’App Group et renouveler
+les profils de provisioning. EAS reçoit la déclaration d’extension via le plugin.
+Si le build GitHub ne peut pas initialiser ces ressources, lancer un premier build
+interactif depuis le terminal et autoriser la connexion Apple :
+
+```sh
+npm run build:prod -- --platform ios
+```
+
+Pour un build local, préserver les éventuels ajustements natifs manuels, puis :
+
+```sh
+npm run prebuild:ios
+npm run ios
+```
+
+Le widget n’est pas disponible dans Expo Go et ne s’installe pas via une OTA.
+Sur un ancien development build sans le module natif, la partie reste utilisable.
+Cette première version concerne iOS ; Android et le web conservent leur fonctionnement.
+
+### Données et actualisation
+
+`src/widgets/timeline.ts` prépare les entrées à partir de la sauvegarde validée,
+avec le même moteur `advancePet` que le jeu. Une entrée est prévue toutes les
+30 minutes, ainsi qu’aux instants du réveil, d’une évolution ou du décès, jusqu’au
+décès prévisible sans soins (au plus 70 heures à partir de l’état sauvegardé).
+Les projections servent uniquement à l’affichage : elles ne modifient pas la partie
+ni le mémorial. Le dernier état décédé reste valable jusqu’à une nouvelle adoption.
+
+`WidgetSync` renouvelle cette chronologie après une sauvegarde, une restauration
+CloudKit, un changement de langue ou un retour au premier plan. Les images sont
+copiées dans l’App Group. iOS décide du moment réel d’affichage ; le widget ne
+constitue pas une alerte de santé en temps réel et ne synchronise pas CloudKit
+lorsque l’app est fermée. Une erreur du widget ne bloque jamais la sauvegarde du jeu.
+
+Les 42 PNG de `assets/widgets/` et leur table d’imports se régénèrent depuis
+les SVG existants avec un module Sharp installé :
+
+```sh
+SHARP_MODULE=/chemin/vers/sharp node scripts/generate-widget-art.cjs
+```
+
+Référence : [Expo Widgets — SDK 57](https://docs.expo.dev/versions/v57.0.0/sdk/widgets/).
+
+Régénérer l’aperçu : `node scripts/preview-widgets.cjs`.
