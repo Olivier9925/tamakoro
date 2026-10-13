@@ -1,8 +1,7 @@
-import { Button, Host } from '@expo/ui';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, TextInput, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { APPEARANCES } from '@/components/pixel-pet';
+import { APPEARANCES, PixelPet } from '@/components/pixel-pet';
 import { IncubatorScene } from '@/components/incubator-scene';
 import { CareKey } from '@/components/care-key';
 import { NeedGauges } from '@/components/need-gauges';
@@ -39,9 +38,8 @@ const actions: { action: Exclude<Action, 'sleep'>; label: TranslationKey; symbol
 function Control({ label, onPress, disabled = false, selected = false }: {
   label: string; onPress: () => void; disabled?: boolean; selected?: boolean;
 }) {
-  return <Host matchContents colorScheme="dark" seedColor={colors.accent}>
-    <Button label={label} onPress={onPress} disabled={disabled} variant={selected ? 'filled' : 'outlined'} />
-  </Host>;
+  return <CareKey label={label} symbol={selected ? '✦' : '↗'} color={selected ? '#a9d875' : '#81bcff'}
+    disabled={disabled} onPress={onPress} wide />;
 }
 export default function HomeScreen() {
   const game = usePet();
@@ -76,31 +74,39 @@ export default function HomeScreen() {
     <ScrollView onLayout={event => setViewportHeight(event.nativeEvent.layout.height)} contentInsetAdjustmentBehavior="automatic"
     automaticallyAdjustKeyboardInsets keyboardDismissMode="on-drag" keyboardShouldPersistTaps="handled"
     bounces={false} alwaysBounceVertical={false} overScrollMode="never"
-    contentContainerStyle={{ flexGrow: 1, padding: pet ? 14 : 20, paddingBottom: Math.max(insets.bottom, 12),
-      gap: pet ? 10 : 16, width: '100%', maxWidth: 560, alignSelf: 'center' }}>
+    contentContainerStyle={{ flexGrow: 1, padding: 14, paddingBottom: Math.max(insets.bottom, 12),
+      gap: !pet || preparingAdoption ? 12 : 10, width: '100%', maxWidth: 560, alignSelf: 'center' }}>
     {game.loading ? <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 16 }}>
       <ActivityIndicator color={colors.accent} /><Text style={{ color: colors.text }}>{t('home.loading')}</Text>
     </View> : !pet || preparingAdoption ? <>
-      <Text style={{ color: colors.accent, fontSize: 12, fontWeight: '700', letterSpacing: 2 }}>{t('home.eyebrow')}</Text>
-      <Text style={{ color: colors.text, fontSize: 30, fontWeight: '700' }}>{t('home.adoptTitle')}</Text>
-      <Text style={{ color: colors.muted, fontSize: 17, lineHeight: 25 }}>
-        {t('home.adoptDescription')}
-      </Text>
-      <IncubatorScene appearance={appearance} />
+      <TerminalPanel style={{ gap: 8, padding: 16 }}>
+        <Text style={{ color: colors.accent, fontFamily: TERMINAL_FONT, fontSize: 10, letterSpacing: 1 }}>{t('home.eyebrow')}</Text>
+        <Text accessibilityRole="header" style={{ color: '#d7ffe4', fontSize: 24, fontWeight: '700', lineHeight: 30 }}>{t('home.adoptTitle')}</Text>
+        <Text style={{ color: colors.muted, fontSize: 13, lineHeight: 20 }}>{t('home.adoptDescription')}</Text>
+      </TerminalPanel>
+      <IncubatorScene appearance={appearance} height={Math.max(200, Math.min(260, height * 0.29))} />
       {pet && <TerminalPanel><Text style={{ color: '#ffcf8a', fontFamily: TERMINAL_FONT, fontSize: 12, lineHeight: 18 }}>{t('home.replaceWarning', { name: pet.name })}</Text></TerminalPanel>}
       {game.error && <Text accessibilityRole="alert" selectable style={{ color: '#ffb2a5' }}>{game.error}</Text>}
       {game.loadFailed ? <Control label={t('home.recoverSave')} onPress={() => { void game.load(); }} /> : <>
-        <Text style={{ color: colors.text, fontSize: 16, fontWeight: '600' }}>{t('home.namePrompt')}</Text>
-        <TextInput value={name} onChangeText={setName} maxLength={20} editable={!game.busy}
-          accessibilityLabel={t('home.nameLabel')} placeholder={t('home.namePlaceholder')} placeholderTextColor={colors.muted}
-          returnKeyType="done" style={{ color: colors.text, backgroundColor: colors.panel, borderRadius: 14,
-            padding: 16, fontSize: 18, fontFamily: TERMINAL_FONT, borderWidth: 1, borderColor: '#365663' }} />
-        <Text style={{ color: colors.text, fontSize: 16, fontWeight: '600' }}>{t('home.colorPrompt')}</Text>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
-          {(Object.keys(APPEARANCES) as Appearance[]).map(value => <Control key={value}
-            label={`${appearance === value ? '✓ ' : ''}${appearanceLabel(value, language)}`} selected={appearance === value}
-            disabled={game.busy} onPress={() => setAppearance(value)} />)}
-        </View>
+        <TerminalPanel style={{ gap: 12, padding: 14 }}>
+          <Text style={{ color: '#d7ffe4', fontFamily: TERMINAL_FONT, fontSize: 12 }}>{t('home.namePrompt')}</Text>
+          <TextInput value={name} onChangeText={setName} maxLength={20} editable={!game.busy}
+            accessibilityLabel={t('home.nameLabel')} placeholder={t('home.namePlaceholder')} placeholderTextColor={colors.muted}
+            returnKeyType="done" style={{ color: colors.text, backgroundColor: '#09151b', borderRadius: 9,
+              paddingHorizontal: 14, paddingVertical: 14, fontSize: 18, fontFamily: TERMINAL_FONT,
+              borderWidth: 1, borderColor: '#42616a', borderBottomColor: '#a9d875' }} />
+          <View accessible={false} style={{ height: 1, backgroundColor: '#2c404b', marginVertical: 2 }} />
+          <Text style={{ color: '#d7ffe4', fontFamily: TERMINAL_FONT, fontSize: 12 }}>{t('home.colorPrompt')}</Text>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            {(Object.keys(APPEARANCES) as Appearance[]).map(value => <CareKey key={value}
+              label={`${appearance === value ? '✓ ' : ''}${appearanceLabel(value, language)}`}
+              symbol="" icon={<View accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+                <PixelPet appearance={value} small pixelSize={1} />
+              </View>}
+              color={value === 'leaf' ? '#a9d875' : value === 'water' ? '#59efff' : '#ffac69'}
+              selected={appearance === value} disabled={game.busy} onPress={() => setAppearance(value)} />)}
+          </View>
+        </TerminalPanel>
         <Control label={game.busy ? t('home.adopting') : pet ? t('home.confirmAdoption') : t('home.adopt')} selected
           disabled={game.busy || !name.trim()} onPress={() => { void game.adopt(name, appearance).then(adopted => { if (adopted) setPreparingAdoption(false); }); }} />
         {pet && <Control label={t('home.cancel')} disabled={game.busy} onPress={() => setPreparingAdoption(false)} />}
@@ -143,7 +149,7 @@ export default function HomeScreen() {
       <IncubatorScene appearance={pet.appearance} stageIndex={growth?.stageIndex} sleeping={pet.sleeping || dead} dead={dead} height={sceneHeight}
         action={lastAction ? `${lastAction.action}-${lastAction.at}` : null} />
       <NeedGauges pet={pet} deltas={gaugeFeedback ?? undefined} />
-      {dead ? <Control label={t('home.adoptNew')} disabled={game.busy} onPress={() => { setName(''); setPreparingAdoption(true); }} /> : <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+      {dead ? <CareKey label={t('home.adoptNew')} symbol="✦" color="#a9d875" wide disabled={game.busy} onPress={() => { setName(''); setPreparingAdoption(true); }} /> : <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
         {actions.map(({ action, label, symbol, color }) => <CareKey key={action} label={t(label)} symbol={symbol} color={color}
           disabled={game.busy || pet.sleeping} onPress={() => { setLastAction({ action, at: Date.now() });
             void game.care(action, deltas => setGaugeFeedback(deltas)); }} />)}
